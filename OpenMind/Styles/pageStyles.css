@@ -1,0 +1,63 @@
+.page-button{
+    display: inline-block;
+
+    font-size: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 15px;
+
+    background-color: rgb(62, 128, 0);
+    color: whitesmoke;
+
+    cursor: pointer;
+}
+
+.logout-button{
+     display: inline-block;
+
+    font-size: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 15px;
+
+    background-color: rgb(255, 9, 1);
+    color: whitesmoke;
+
+    cursor: pointer;
+}
+
+.profile-form{
+
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+
+    margin: 10px;
+    width: max-content;
+    height: max-content;
+
+    border: 1px solid;
+    padding: 3px;
+    border-radius: 5px;
+
+}
+
+.profile-color{
+    background: linear-gradient(0deg, rgb(255, 153, 0), rgb(255, 222, 180));
+}
+
+.profile-label{
+    flex: auto;
+    text-align: left;
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
