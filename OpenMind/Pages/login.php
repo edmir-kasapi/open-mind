@@ -1,7 +1,5 @@
 <?php 
 
-require("Config/guestConfig.php");
-
 $title = "Log In";
 
 ?>

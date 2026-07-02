@@ -10,11 +10,16 @@ function isViewProfileActive()
     return false;
 }
 
+$profilePic = $_SESSION['user']['user_profile']['photo_hash_name'] .'.'. $_SESSION['user']['user_profile']['photo_extension'];
+$alt = $_SESSION['user']['user_profile']['photo_original_name'] . $_SESSION['user']['user_profile']['photo_extension'];
+$userName = $_SESSION['user']['user_info']['user_name'];
+
 ?>
 
 
-<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-     Actions
+<a class="navbar-brand" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <img src="Pictures/Uploads/Profile_Pictures/<?php echo $profilePic; ?>" alt="" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
+    <strong><?php echo $userName; ?></strong> 
 </a>
 
 <ul class="dropdown-menu">

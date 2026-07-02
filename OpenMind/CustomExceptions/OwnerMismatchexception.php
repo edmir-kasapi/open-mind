@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-class UserNotFoundException extends Exception 
+class OwnerMismatchException extends Exception
 {
     public function __construct($message)
     {
