@@ -25,9 +25,10 @@ class Router
         $uri = str_replace('/OpenMind','', $uri);
         $method = $_SERVER['REQUEST_METHOD'];
 
-        var_dump($_SESSION['token']);
-        var_dump($_SESSION['token_lifetime']);
-       
+        //var_dump($_SESSION['user']['user_info']['role_name']);
+        //var_dump($_SESSION['user']);
+        //var_dump($_SESSION['token_lifetime']);
+
 
         if(array_key_exists($uri, $this->routes[$method]))
         {

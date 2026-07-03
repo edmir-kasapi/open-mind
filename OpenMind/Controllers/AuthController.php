@@ -52,8 +52,8 @@ class AuthController extends Controller
 
             $_SESSION['user'] = $this -> authService -> authenticateUser($email, $password);
             unset($_SESSION['autofill']['login_email_fill']);
-            $this -> authMiddleware ->resetTokenTime();
-            header("Location: ./mainMenu");
+            $this -> authMiddleware -> resetTokenTime();
+            $this -> authMiddleware -> loginguard(); 
             
         } catch (PDOException | ValidationException | UserNotFoundException $e) {
             

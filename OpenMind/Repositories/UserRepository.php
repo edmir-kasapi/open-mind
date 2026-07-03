@@ -45,12 +45,15 @@ class UserRepository extends Repository
             ":photoType" => 'PROFILE',
             ":userId" => $id
         ]);
+
+        $this -> addUserRole($id);
                 
     }
 
-    function getUserInfo($id)
+    public function getUserInfo($id)
     {
-        $query = "SELECT * FROM users WHERE user_id = :userId";
+        $query = "SELECT * FROM users u, roles r 
+                  WHERE r.user_id = u.user_id AND u.user_id = :userId ";
         $statement = $this -> pdo -> prepare($query);
         $statement -> execute([":userId" => $id]);
         $infoResult = $statement -> fetch(PDO::FETCH_ASSOC);
@@ -68,7 +71,7 @@ class UserRepository extends Repository
         return $fullresult;
     }
 
-    function getUserInfoByEmail($email)
+    public function getUserInfoByEmail($email)
     {
         $query = "SELECT * FROM users WHERE user_email = :userEmail";
         $statement = $this -> pdo -> prepare($query);
@@ -79,7 +82,39 @@ class UserRepository extends Repository
         return $result;
     }
 
-    function resetUserPassword($email, $password)
+    public function getAllUsersForAdmin($id, $currentPage)
+    {
+        $offset = ($currentPage - 1) * 10;
+
+        $query = "SELECT * FROM users 
+                  WHERE user_id != :userId
+                  ORDER BY user_registration_date DESC
+                  LIMIT 10 OFFSET $offset";
+        $statement = $this -> pdo -> prepare($query);
+
+        $statement -> execute([
+            ":userId" => $id,
+            ]);
+
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+
+    }
+
+    public function getAllUsersCount($id)
+    {
+        $query = "SELECT COUNT(user_id) as value FROM users WHERE user_id != :userId";
+        $statement = $this -> pdo -> prepare($query);
+
+        $statement -> execute([
+            ":userId" => $id,
+            ]);
+
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function resetUserPassword($email, $password)
     {
         $hashed = md5($password);
 
@@ -91,7 +126,7 @@ class UserRepository extends Repository
             ]);
     }
 
-    function changeUserName($id, $name)  : void
+    public function changeUserName($id, $name)  : void
     {
         $query = "UPDATE users SET user_name = :userName WHERE user_id = :userId";
         $statement = $this -> pdo -> prepare($query);
@@ -103,7 +138,7 @@ class UserRepository extends Repository
 
     }
 
-    function changeUserEmail($id, $email) : void
+    public function changeUserEmail($id, $email) : void
     {
         $query = "UPDATE users SET user_email = :userEmail WHERE user_id = :userId ";
         $statement = $this -> pdo -> prepare($query);
@@ -114,7 +149,7 @@ class UserRepository extends Repository
         ]);
     }
 
-    function changeUserPassword($id, $password) : void
+    public function changeUserPassword($id, $password) : void
     {
         $hashed = md5($password);
 
@@ -127,7 +162,7 @@ class UserRepository extends Repository
         ]);
     }
 
-    function changeUserProfile($id, $picture) : void
+    public function changeUserProfile($id, $picture) : void
     {
         $query = "UPDATE photos 
                     SET photo_hash_name = :photoHashName,  
@@ -146,7 +181,7 @@ class UserRepository extends Repository
         ]);
     }
 
-    function removeUserProfile($id) : void
+    public function removeUserProfile($id) : void
     {
         $defaultProfile = 'default_profile';
         $defaultExtension = '.png';
@@ -194,6 +229,18 @@ class UserRepository extends Repository
 
         return $result;
 
+    }
+
+    private function addUserRole($id)
+    {
+        $query = "INSERT INTO roles (user_id, role_name)
+                  VALUES (:userId, :roleName)";
+        $statement = $this -> pdo -> prepare($query);
+
+        $statement -> execute([
+            ":userId" => $id,
+            ":roleName" => "USER"
+        ]);
     }
 
 }

@@ -17,14 +17,22 @@ $userName = $_SESSION['user']['user_info']['user_name'];
 ?>
 
 
-<a class="navbar-brand" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <img src="Pictures/Uploads/Profile_Pictures/<?php echo $profilePic; ?>" alt="" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
+<a class="navbar-brand ms-3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+    <?php if($_SESSION['user']['user_info']['role_name'] === 'USER' ): ?>
+        <img src="Pictures/Uploads/Profile_Pictures/<?php echo $profilePic; ?>" alt="" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle">
+    <?php endif;?>
+    
     <strong><?php echo $userName; ?></strong> 
 </a>
 
 <ul class="dropdown-menu">
-    <li><a class="dropdown-item <?php if(!isViewProfileActive()){ echo "disabled"; } ?> " href="./profile">View Profile</a></li>
-    <li><hr class="dropdown-divider"></li>
+
+    <?php if($_SESSION['user']['user_info']['role_name'] === 'USER' ): ?>
+        <li><a class="dropdown-item <?php if(!isViewProfileActive()){ echo "disabled"; } ?> " href="./profile">View Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+    <?php endif;?>
+    
     <li>
         <form action="./logout" method="post">
             <input type="hidden" name="tokenVal" value=<?php echo $_SESSION['token']; ?> >

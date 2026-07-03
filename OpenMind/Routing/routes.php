@@ -2,6 +2,7 @@
 
 require_once('Controllers/AuthController.php');
 require_once('Controllers/UserController.php');
+require_once('Controllers/AdminController.php');
 require_once('router.php');
 
 $router = new Router();
@@ -33,5 +34,10 @@ $router -> post('/editPostContent', UserController::class, 'editPostContent');
 $router -> post('/addPostPhotos', UserController::class, 'addPostPhotos');
 $router -> post('/deleteImage', UserController::class, 'deleteSinglePhoto');
 $router -> post('/deletePost', UserController::class, 'deletePost');
+
+//admin routes
+//GET
+$router -> get('/adminMenu', AdminController::class, 'showAdminMenu');
+$router -> get('/inspectUser', AdminController::class, 'showInspectUser');
 
 ?>

@@ -6,9 +6,23 @@ class AuthMiddleware
 {
     public function guestGuard()
     {
+        $start = 1;
+
         if(isset($_SESSION['user']))
         {
-            header("Location: ./mainMenu");
+            switch($_SESSION['user']['user_info']['role_name']){
+
+            case 'USER':
+                header("Location: ./mainMenu");
+                break;
+            
+            case 'ADMIN':
+                header("Location: ./adminMenu?currentPage={$start}");
+                break;
+            
+            default:
+                break;
+            }
         }  
     }
 
@@ -17,7 +31,65 @@ class AuthMiddleware
         if(!isset($_SESSION['user']))
         {
             header("Location: ./");
+            return;
         }
+
+        if( $_SESSION['user'] != 'USER' )
+        {
+
+            
+
+            switch($_SESSION['user']['user_info']['role_name']){
+
+                case 'ADMIN':
+                    $start = 1;
+                    header("Location: ./adminMenu?currentPage={$start}");
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+    }
+
+    public function adminGuard()
+    {
+        if(!isset($_SESSION['user']))
+        {
+            header("Location: ./");
+            return;
+        }
+
+        if( $_SESSION['user'] != 'ADMIN' )
+        {
+            switch($_SESSION['user']['user_info']['role_name']){
+            
+            case 'USER':
+                header("Location: ./mainMenu");
+                break;
+            
+            default:
+                break;
+            }
+        }
+    }
+
+    public function loginGuard()
+    {
+        switch($_SESSION['user']['user_info']['role_name']){
+
+            case 'USER':
+                header("Location: ./mainMenu");
+                break;
+            
+            case 'ADMIN':
+                header("Location: ./adminMenu");
+                break;
+            
+            default:
+                header("Location: ./404");
+        }
+
     }
 
     public function tokenGuard($submittedToken, $sessionToken) : void

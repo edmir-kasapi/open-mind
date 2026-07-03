@@ -2,12 +2,29 @@
 
 function isHomeButtonActive()
 {
-    if($_SERVER["REQUEST_URI"] != "/OpenMind/mainMenu")
-    { 
-        return true;
-    }
+    switch(($_SESSION['user']['user_info']['role_name'])) {
+
+        case 'USER' :
+            if($_SERVER["REQUEST_URI"] != "/OpenMind/mainMenu")
+                { 
+                    return true;
+                }
+                
+                return false;
+                break;
+
+        case 'ADMIN' :
+            if($_SERVER["REQUEST_URI"] != "/OpenMind/adminMenu")
+                { 
+                    return true;
+                }
+                
+                return false;
+                break;
     
-    return false;
+    }
+
+    
 }
 
 ?>
