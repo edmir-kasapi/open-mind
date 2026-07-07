@@ -10,8 +10,8 @@ function isViewProfileActive()
     return false;
 }
 
-$profilePic = $_SESSION['user']['user_profile']['photo_hash_name'] .'.'. $_SESSION['user']['user_profile']['photo_extension'];
-$alt = $_SESSION['user']['user_profile']['photo_original_name'] . $_SESSION['user']['user_profile']['photo_extension'];
+$profilePic = ($_SESSION['user']['user_profile']['photo_hash_name'] ?? '') .'.'. ($_SESSION['user']['user_profile']['photo_extension'] ?? '');
+$alt = ($_SESSION['user']['user_profile']['photo_original_name'] ?? '') . ($_SESSION['user']['user_profile']['photo_extension'] ?? '');
 $userName = $_SESSION['user']['user_info']['user_name'];
 
 ?>

@@ -92,7 +92,7 @@ class UserController extends Controller
 
         } catch (PDOException $e) {
 
-            $this -> userService -> removeorphanedPicture($filename);
+            $this -> userService -> removeorphanedPicture($profilePicture);
             $_SESSION['messages']['error'] = $e -> getMessage();
 
         } catch (InvalidTokenException $e) {
@@ -310,6 +310,8 @@ class UserController extends Controller
 
         }
     }
+
+    
 }
 
 ?>

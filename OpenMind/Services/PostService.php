@@ -8,6 +8,7 @@ require_once('CustomExceptions/ValidationException.php');
 class PostService
 {
     private $postRepository;
+    private $userRepository;
 
     public function __construct()
     {
@@ -30,20 +31,47 @@ class PostService
 
         $postData = [];
 
-        foreach($posts as $post)
+        if($posts)
         {
-            $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
-            $postPictures = $this -> postRepository -> getPostPhotos($post['post_id']);
+            foreach($posts as $post)
+            {
+                $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
+                $postPictures = $this -> postRepository -> getPostPhotos($post['post_id']);
 
-            $postData[] = array(
-                "post_info" => $post,
-                "post_user" => $postUser,
-                "post_pictures" => $postPictures
-            );
+                $postData[] = array(
+                    "post_info" => $post,
+                    "post_user" => $postUser,
+                    "post_pictures" => $postPictures
+                );
+            }
         }
 
         return $postData;
 
+    }
+
+    public function getUserPostsData($id)
+    {
+        $posts = $this -> postRepository -> getUserPosts($id);
+
+        $postData = [];
+
+        if($posts)
+        {
+            foreach($posts as $post)
+            {
+                $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
+                $postPictures = $this -> postRepository -> getPostPhotos($post['post_id']);
+
+                $postData[] = array(
+                    "post_info" => $post,
+                    "post_user" => $postUser,
+                    "post_pictures" => $postPictures
+                );
+            }
+        }
+
+        return $postData;
     }
 
     public function getPostInfo($id)
@@ -96,6 +124,17 @@ class PostService
         $this -> postRepository -> deletePost($post['post_info']['post_id'], $idUser);
     }
 
+    public function deleteAllUserPosts($idUser)
+    {
+        $posts = $this -> getUserPostsData($idUser);
+
+        foreach($posts as $post)
+        {
+            $this -> deletePost($post, $idUser);
+        }
+
+    }
+
     private function validatePostContent($content)
     {
         $errors = [];
@@ -122,8 +161,9 @@ class PostService
         //var_dump($pictures);
         $uploadsInfo = []; //the picture info will be saved here
 
-        if(empty($pictures['tmp_name']))
+        if(empty($pictures['tmp_name'][0]))
         {
+            
             return $uploadsInfo; //If no file was uploaded, the temp folder will be empty, so we return an empty array
         }
 

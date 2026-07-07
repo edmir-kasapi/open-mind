@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary layout-fixed">
         <div class="container-fluid">
 
             <i class="bi bi-brilliance">OpenMind</i>

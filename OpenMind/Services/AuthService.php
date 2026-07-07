@@ -29,10 +29,10 @@ class AuthService{
 
     }
 
-    public function registerUser($name, $email, $password) : void
+    public function registerUser($name, $email, $password, $role) : void
     {
         $this -> validateRegisterData($name, $email, $password);
-        $this -> userRepository -> registerUser($name, $email, $password);
+        $this -> userRepository -> registerUser($name, $email, $password, $role);
     }
 
     public function resetPassword($email, $passwordNew, $passwordconfirm)
@@ -286,14 +286,14 @@ class AuthService{
     {
         $result = $this -> userRepository -> getUserInfoByEmail($email);
 
-        return md5($password) == $result['user_password'];
+        return md5($password) == $result['user_info']['user_password'];
     }
 
     private function isSameAsOldPasswordById($id, $password)
     {
         $result = $this -> userRepository -> getUserInfo($id);
 
-        return md5($password) == $result['user_password'];
+        return md5($password) == $result['user_info']['user_password'];
     }
 
 }

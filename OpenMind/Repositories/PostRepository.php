@@ -32,9 +32,22 @@ class PostRepository extends Repository
         return $postData;
     }
 
+    public function getUserPosts($id)
+    {
+        $query = "SELECT * FROM posts WHERE user_id = :userId";
+        $statement = $this -> pdo -> prepare($query);
+
+        $statement -> execute([
+            ":userId" => $id
+        ]);
+
+        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     public function getPostInfo($id)
     {
-        $query = "SELECT * FROM posts WHERE post_id = :postId;;";
+        $query = "SELECT * FROM posts WHERE post_id = :postId;";
         $statement = $this -> pdo -> prepare($query);
 
         $statement -> execute([

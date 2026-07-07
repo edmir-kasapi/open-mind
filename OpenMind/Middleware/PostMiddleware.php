@@ -8,7 +8,7 @@ class PostMiddleware
     {
         if(!$post)
         {
-            var_dump($post);
+            //var_dump($post);
             header('Location: ./404');
         }
     }

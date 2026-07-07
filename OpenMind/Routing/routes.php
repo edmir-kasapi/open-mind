@@ -27,7 +27,7 @@ $router -> get('/profile', UserController::class, 'showProfile');
 $router -> get('/postForm', UserController::class, 'showPostForm');
 $router -> get('/inspectPost', Usercontroller::class, 'showInspectPost');
 //POST
-$router -> post('/editProfilePic',UserController::class, 'editProfilePic');
+$router -> post('/editProfilePic', UserController::class, 'editProfilePic');
 $router -> post('/clearPicture', UserController::class, 'clearprofilePic');
 $router -> post('/processCreatePost', Usercontroller::class, 'createPost');
 $router -> post('/editPostContent', UserController::class, 'editPostContent');
@@ -39,5 +39,21 @@ $router -> post('/deletePost', UserController::class, 'deletePost');
 //GET
 $router -> get('/adminMenu', AdminController::class, 'showAdminMenu');
 $router -> get('/inspectUser', AdminController::class, 'showInspectUser');
+$router -> get('/viewUserPosts', AdminController::class, 'showViewUserPosts');
+$router -> get('/inspectUserPost', AdminController::class, 'showInspectuserPost');
+$router -> get('/allPosts', AdminController::class, 'showAllPosts');
+//POST
+$router -> post('/adminEditNameEmail', AdminController::class, 'adminEditNameEmail');
+$router -> post('/adminEditProfilePic', AdminController::class, 'adminEditProfilePic');
+$router -> post('/adminClearProfilePic', AdminController::class, 'adminClearProfilePic');
+$router -> post('/adminChangeUserPassword', AdminController::class,'adminChangeUserPassword');
+$router -> post('/adminEditPostContent', AdminController::class, 'adminEditPostContent');
+$router -> post('/adminAddPhotos', AdminController::class, 'adminAddPostPhotos');
+$router -> post('/adminRemovePhoto', AdminController::class, 'adminDeleteSinglePhoto');
+$router -> post('/adminRemovePost', AdminController::class, 'adminDeletePost');
+$router -> post('/deleteAllUserPosts', AdminController::class, 'adminDeleteAllUserPosts');
+$router -> post('/deleteUser', AdminController::class, 'adminDeleteUser');
+$router -> post('/createUser', AdminController::class, 'adminCreateUser');
+     
 
 ?>

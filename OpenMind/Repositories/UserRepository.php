@@ -18,18 +18,19 @@ class UserRepository extends Repository
         return $result;
     }
 
-    public function registerUser($name, $email, $password)
+    public function registerUser($name, $email, $password, $role)
     {
         $hashed = md5($password);
         $defaultProfile = 'default_profile';
         $defaultExtension = '.png';
 
-        $query = "INSERT INTO users(user_name, user_email, user_password, user_registration_date) 
-                  VALUES (:userName, :userEmail, :userPassword, CURRENT_TIMESTAMP() );";
+        $query = "INSERT INTO users(user_name, user_email, user_password, user_registration_date, role_id) 
+                  VALUES (:userName, :userEmail, :userPassword, CURRENT_TIMESTAMP(), :roleId);";
         $statement = $this -> pdo -> prepare($query);
         $statement -> bindValue(":userName", $name, PDO::PARAM_STR);
         $statement -> bindValue(":userEmail", $email, PDO::PARAM_STR);
         $statement -> bindValue(":userPassword",  $hashed, PDO::PARAM_STR);
+        $statement -> bindValue(":roleId", $role, PDO::PARAM_INT);
         $statement -> execute();
 
         $id = $this -> pdo ->lastInsertID();
@@ -45,15 +46,13 @@ class UserRepository extends Repository
             ":photoType" => 'PROFILE',
             ":userId" => $id
         ]);
-
-        $this -> addUserRole($id);
                 
     }
 
     public function getUserInfo($id)
     {
         $query = "SELECT * FROM users u, roles r 
-                  WHERE r.user_id = u.user_id AND u.user_id = :userId ";
+                  WHERE r.role_id = u.role_id AND u.user_id = :userId ";
         $statement = $this -> pdo -> prepare($query);
         $statement -> execute([":userId" => $id]);
         $infoResult = $statement -> fetch(PDO::FETCH_ASSOC);
@@ -88,8 +87,7 @@ class UserRepository extends Repository
 
         $query = "SELECT * FROM users 
                   WHERE user_id != :userId
-                  ORDER BY user_registration_date DESC
-                  LIMIT 10 OFFSET $offset";
+                  ORDER BY user_registration_date DESC";
         $statement = $this -> pdo -> prepare($query);
 
         $statement -> execute([
@@ -203,6 +201,18 @@ class UserRepository extends Repository
         ]);
     }
 
+    public function deleteUserInfo($id)
+    {
+        $query = "DELETE FROM photos WHERE user_id = :userId;
+                  DELETE FROM users WHERE user_id = :userId;";
+        //$query2 = "DELETE FROM users WHERE user_id = :userId;"
+        
+        $statement = $this -> pdo -> prepare($query);
+        $statement -> execute([
+            ':userId' => $id  
+        ]);
+                  
+    }
 
     public function checkForEmail($email) 
     {
@@ -229,18 +239,6 @@ class UserRepository extends Repository
 
         return $result;
 
-    }
-
-    private function addUserRole($id)
-    {
-        $query = "INSERT INTO roles (user_id, role_name)
-                  VALUES (:userId, :roleName)";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":userId" => $id,
-            ":roleName" => "USER"
-        ]);
     }
 
 }

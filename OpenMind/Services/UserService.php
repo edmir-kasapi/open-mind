@@ -17,7 +17,6 @@ class UserService
     public function getUserInfoId($id)
     {
         $result = $this -> userRepository -> getUserInfo($id);
-        var_dump($result);
 
         if(!$result){
             throw new UserNotFoundException('User with this Id does not exist');
@@ -39,10 +38,19 @@ class UserService
         $this -> removeProfilePicture($picture);
     }
 
+    public function deleteUser($user)
+    {
+        $picture = $user['user_profile']['photo_hash_name'] .'.'. $user['user_profile']['photo_extension'];;
+        $this -> removeProfilePicture($picture);
+        $this -> userRepository -> deleteUserInfo($user['user_info']['user_id']);
+
+    }
+
     public function removeorphanedPicture($filename) : void
     {
         $this -> removeProfilePicture($filename);
     }
+
 
     private function uploadProfilePicture($file) : array
     {

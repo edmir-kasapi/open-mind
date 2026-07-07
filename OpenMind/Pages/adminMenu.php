@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $title = "Admin Dashboard";
 
@@ -6,259 +6,293 @@ $title = "Admin Dashboard";
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <?php include("Components/Head/baseHeadCode.php"); ?>
 </head>
-<body>
-    <?php include("Components/Navbar/navbar.php"); ?>
-    
-    <h1 class="text-center display-4 mt-3">Welcome, admin!</h1>
 
-    <section class="w-50 mx-auto">
-        
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary app-loaded">
+    
+    <?php include("Components/Sidebar/sidebar.php"); ?>
+    <?php include("Components/Navbar/adminNavbar.php"); ?>
+
+
+    <main class="app-main p-1" id="main" tabindex="-1">
+
+        <h1 class="w-25 mx-auto text-center display-4 mt-3">Welcome, admin!</h1>
+
+        <section class="w-50 mx-auto">
+
             <div class="app-content">
-            <!--begin::Container-->
-            <div class="container-fluid">
-                <!--begin::Row-->
-                <div class="row">
-                <div class="col-12">
-                    <!--begin::Card-->
-                    <div class="card mb-4">
-                    <!--begin::Card Header-->
-                    <div class="card-header">
-                        <div class="row g-2 align-items-center">
-                        <div class="col-12 col-md-4">
-                            <h3 class="card-title">User Directory</h3>
-                        </div>
-                        <div class="col-12 col-md-8">
-                            <div class="d-flex flex-wrap justify-content-md-end gap-2">
-                            <div class="input-group input-group-sm w-auto">
-                                <span class="input-group-text">
-                                <i class="bi bi-search" aria-hidden="true"></i>
-                                </span>
-                                <input type="search" id="user-search" class="form-control" placeholder="Search users" aria-label="Search users" style="width: 180px">
-                            </div>
-                            <select id="user-role-filter" class="form-select form-select-sm w-auto" aria-label="Filter by role">
-                                <option value="all" selected="">All roles</option>
-                                <option value="administrator">Administrator</option>
-                                <option value="editor">Editor</option>
-                                <option value="author">Author</option>
-                                <option value="subscriber">Subscriber</option>
-                            </select>
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-user">
-                                <i class="bi bi-person-plus-fill me-1" aria-hidden="true"> </i>
-                                New user
-                            </button>
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Users Directory</h3>
+                            <div class="card-tools">
+                                <div class="input-group input-group-sm" style="width: 16rem">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-search" aria-hidden="true"></i>
+                                    </span>
+                                    <input id="table-filter" type="search" class="form-control" placeholder="Filter rows…" aria-label="Filter rows">
+                                </div>
                             </div>
                         </div>
-                        </div>
-                    </div>
-                    <!--end::Card Header-->
-                    <!--begin::Card Body-->
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                        <table class="table table-hover align-middle m-0" role="table">
-                            <thead>
-                            <tr>
-                                <th scope="col">User</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Created</th>
-                                <th class="text-end" scope="col">Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                                <?php foreach($usersList as $user):?>
-                                    <?php
-                                        $picture = 'Pictures/Uploads/Profile_Pictures/' . $user['user_profile']['photo_hash_name'] . '.' . $user['user_profile']['photo_extension'];
-                                        $name = $user['user_info']['user_name'];
-                                        $email = $user['user_info']['user_email'];
-                                        $registrationDate = $user['user_info']['user_registration_date'];
-                                        $role = $user['user_info']['role_name'];
-
-                                        $badgeColor = '';
-
-                                        switch($role){
-
-                                        case 'USER':
-                                            $badgeColor = 'text-bg-info';
-                                            break;
-                                        
-                                        case 'ADMIN':
-                                             $badgeColor = 'text-bg-danger';
-                                            break;
-                                        
-                                        default:
-                                            break;
-
-                                        }
-                                    ?>
-
-                                    <tr>
-                                        <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="<?php echo $picture; ?>" alt="" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" class="img-size-32 rounded-circle me-2">
-                                            <span class="fw-medium"><?php echo $name; ?></span>
+                        <div class="card-body">
+                            <div class="d-flex gap-2 mb-3">
+                                <button id="export-csv" type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-filetype-csv me-1" aria-hidden="true"></i>
+                                    Export CSV
+                                </button>
+                                <button id="export-json" type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-filetype-json me-1" aria-hidden="true"></i>
+                                    Export JSON
+                                </button>
+                                <button id="print-table" type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-printer me-1" aria-hidden="true"></i>
+                                    Print
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-user">
+                                    <i class="bi bi-person-plus-fill me-1" aria-hidden="true"> </i>
+                                    New user
+                                </button>
+                            </div>
+                            <div id="users-table" class="tabulator" role="grid" aria-owns="tabulator-table-body" tabulator-layout="fitColumns">
+                                <div class="tabulator-header" role="rowgroup">
+                                    <div class="tabulator-header-contents">
+                                        <div class="tabulator-headers" role="row" style="height: 84px;">
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="none" tabulator-field="id" style="min-width: 40px; width: 60px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">#</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="none" tabulator-field="name" style="min-width: 40px; width: 163px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">Name</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tabulator-header-filter"><input type="search" placeholder="" style="padding: 4px; width: 100%; box-sizing: border-box;"></div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="none" tabulator-field="email" style="min-width: 40px; width: 163px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">Email</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tabulator-header-filter"><input type="search" placeholder="" style="padding: 4px; width: 100%; box-sizing: border-box;"></div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="none" tabulator-field="role" style="min-width: 40px; width: 120px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">Role</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tabulator-header-filter"><input type="search" placeholder="" style="padding: 4px; width: 100%; box-sizing: border-box; cursor: default; caret-color: transparent;"></div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="descending" tabulator-field="status" style="min-width: 40px; width: 130px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">Status</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tabulator-header-filter"><input type="search" placeholder="" style="padding: 4px; width: 100%; box-sizing: border-box; cursor: default; caret-color: transparent;"></div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
+                                            <div class="tabulator-col tabulator-sortable tabulator-col-sorter-element" role="columnheader" aria-sort="none" tabulator-field="joined" style="min-width: 40px; width: 130px; height: 84px;">
+                                                <div class="tabulator-col-content">
+                                                    <div class="tabulator-col-title-holder">
+                                                        <div class="tabulator-col-title">Joined</div>
+                                                        <div class="tabulator-col-sorter">
+                                                            <div class="tabulator-arrow"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><span class="tabulator-col-resize-handle" style="height: 84px;"></span>
                                         </div>
-                                        </td>
-                                        <td>
-                                            <?php echo $email; ?>
-                                        </td>
-                                        <td>
-                                        <span class="badge <?php echo $badgeColor; ?>"><?php echo $role; ?></span>
-                                        </td>
-                                        <td>
-                                            <?php echo $registrationDate; ?>
-                                        </td>
-                                        <td class="text-end">
-                                        <div class="btn-group btn-group-sm">
-
-                                            <a href="./inspectUser?editingUser=<?php echo $user['user_info']['user_id'] ?>" class="btn btn-outline-secondary">
-                                                    <i class="bi bi-pencil" aria-hidden="true"> </i>
-                                            </a>
-                                            
+                                        <div class="tabulator-frozen-rows-holder" style="min-width: 0px;"></div>
+                                    </div>
+                                </div>
+                                <div class="tabulator-tableholder table-responsive" tabindex="0" style="height: 490px;">
 
 
-                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-delete-user" aria-label="Delete Daniel Cooper">
-                                                <i class="bi bi-trash" aria-hidden="true"> </i>
-                                            </button>
-                                        </div>
-                                        </td>
-                                    </tr>
-                                    
-                                <?php endforeach; ?>    
-                            
-                            </tbody>
-                        </table>
+                                    <div class="tabulator-footer">
+                                        <div class="tabulator-footer-contents"><span class="tabulator-paginator"><label>Page Size</label><select class="tabulator-page-size" aria-label="Page Size" title="Page Size">
+                                                    <option value="10">10</option>
+                                                    <option value="25">25</option>
+                                                    <option value="50">50</option>
+                                                    <option value="100">100</option>
+                                                </select><button class="tabulator-page" type="button" role="button" aria-label="First Page" title="First Page" data-page="first" disabled="">First</button><button class="tabulator-page" type="button" role="button" aria-label="Prev Page" title="Prev Page" data-page="prev" disabled="">Prev</button><span class="tabulator-pages"><button class="tabulator-page active" type="button" role="button" aria-label="Show Page 1" title="Show Page 1" data-page="1">1</button><button class="tabulator-page" type="button" role="button" aria-label="Show Page 2" title="Show Page 2" data-page="2">2</button></span><button class="tabulator-page" type="button" role="button" aria-label="Next Page" title="Next Page" data-page="next">Next</button><button class="tabulator-page" type="button" role="button" aria-label="Last Page" title="Last Page" data-page="last">Last</button></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-secondary small">
+                                Powered by
+                                <a href="https://tabulator.info/" target="_blank" rel="noopener">Tabulator</a>
+                                — vanilla JS, no jQuery required.
+                            </div>
                         </div>
-                        <!-- /.table-responsive -->
-                    </div>
-                    <!--end::Card Body-->
-                    <!--begin::Card Footer-->
-                    <div class="card-footer clearfix">
-                        <div class="float-start pt-1 fs-7 text-body-secondary">
-                        Showing <?php echo (($currentPage -1 ) * 10) + 1?> to <?php echo (($currentPage -1 ) * 10) + $userCount ?> of <?php echo $total ?> users
-                        </div>
-
-                        <?php 
-                        
-                        $totalPages = ceil($total / 10.0);  
-
-                        $visiblePages = 5; 
-                        $start = max(1, $currentPage - floor($visiblePages /2 ));
-                        $end = min($totalPages, $start + $visiblePages);
-                        
-                        ?>
-
-                        <ul class="pagination pagination-sm m-0 float-end">
-                        <li class="page-item <?php if($currentPage <= 1){ echo "disabled"; }  ?>">
-                            <a class="page-link" href="./adminMenu?currentPage=<?php echo 1; ?>" aria-label="Previous"> « </a>
-                        </li>
-
-                        <?php for($i = $start; $i <= $end; $i++):  ?>
-
-                            <?for ?>
-
-                            <li class="page-item <?php if($i == $currentPage){ echo "active"; }  ?>">
-                                <a class="page-link" href="./adminMenu?currentPage=<?php echo $i; ?>"> <?php echo $i; ?> </a>
-                            </li>
-
-                        <?php endfor; ?>
-
-                        <li class="page-item <?php if($currentPage >= $totalPages){ echo "disabled"; }  ?> ">
-                            <a class="page-link" href="./adminMenu?currentPage=<?php echo $totalPages ?>" aria-label="Next"> » </a>
-                        </li>
-                        </ul>
-                    </div>
-                    <!--end::Card Footer-->
-                    </div>
-                    <!--end::Card-->
-                </div>
-                <!-- /.col -->
-                </div>
-                <!--end::Row-->
-
-                <!--begin::Add User Modal-->
-                <div class="modal fade" id="modal-add-user" tabindex="-1" aria-labelledby="modal-add-user-label" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <form>
-                        <div class="modal-header">
-                        <h5 class="modal-title" id="modal-add-user-label">Add new user</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="new-user-name" class="form-label"> Full name <span class="required-indicator sr-only"> (required)</span></label>
-                            <input type="text" class="form-control" id="new-user-name" placeholder="e.g. Jane Doe" required="">
-                        </div>
-                        <div class="mb-3">
-                            <label for="new-user-email" class="form-label"> Email address <span class="required-indicator sr-only"> (required)</span></label>
-                            <input type="email" class="form-control" id="new-user-email" placeholder="name@example.com" required="">
-                            <div class="form-text">The invitation will be sent to this address.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="new-user-role" class="form-label"> Role </label>
-                            <select id="new-user-role" class="form-select">
-                            <option selected="">Subscriber</option>
-                            <option>Author</option>
-                            <option>Editor</option>
-                            <option>Administrator</option>
-                            </select>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="new-user-welcome" checked="">
-                            <label class="form-check-label" for="new-user-welcome">
-                            Send a welcome email with login details
-                            </label>
-                        </div>
-                        </div>
-                        <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">Create user</button>
-                        </div>
-                    </form>
                     </div>
                 </div>
-                </div>
-                <!--end::Add User Modal-->
 
-                <!--begin::Delete User Modal-->
-                <div class="modal fade" id="modal-delete-user" tabindex="-1" aria-labelledby="modal-delete-user-label" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modal-delete-user-label">Delete user</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="mb-0">
-                        Are you sure you want to delete this user? All content owned by the account
-                        will be reassigned to the site administrator. This action cannot be undone.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancel
-                        </button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                        Delete user
-                        </button>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                <!--end::Delete User Modal-->
-            </div>
-            <!--end::Container-->
-            </div>
-        
-    </section>
-    
+
+                <?php foreach ($usersList as $user): ?>
+
+                    <?php include("Components/Modals/deleteModal.php"); ?>
+
+                <?php endforeach; ?>
+
+        </section>
+
+        <?php include('Components/Modals/userModal.php') ?>
+
+
+        </div>
+        <!--end::Container-->
+        </div>
+
+
+
+    </main>
+
+    <main class="app-main" id="main" tabindex="-1">
+
+    </main>
+
 
     <?php include("Components/Links/bootstrapjs.html"); ?>
 </body>
+
 </html>
+
+
+<?php include("Pages/Components/Toasts/toastScript.php"); ?>
+
+<script>
+    const roleBadge = (cell) => {
+        const value = cell.getValue();
+        const map = {
+            ADMIN: 'danger',
+            USER: 'info',
+        };
+        const color = map[value] || 'secondary';
+        return `<span class="badge text-bg-${color}">${value}</span>`;
+    };
+
+    const actionButtons = (cell) => {
+        const value = cell.getValue();
+
+        return `<div class="btn-group btn-group-sm">
+                    <a href="./inspectUser?editingUser=${value}" class="btn btn-outline-secondary"><i class="bi bi-pencil" aria-hidden="true"> </i> </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modal-delete-user-${value}" aria-label="Delete">
+                            <i class="bi bi-trash" aria-hidden="true"> </i>
+                    </button>
+                </div>`;
+
+    }
+
+    const userProfile = () => {
+        return ` `
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = <?php echo json_encode($usersList); ?>
+
+        const table = new Tabulator('#users-table', {
+            data: data,
+            layout: 'fitColumns',
+            pagination: true,
+            paginationSize: 10,
+            paginationSizeSelector: [5, 10, 25, 50, 100],
+            movableColumns: true,
+            columns: [{
+                    title: '#',
+                    field: 'user_info.user_id',
+                    width: 60,
+                    headerSort: true
+                },
+                {
+                    title: 'Name',
+                    field: 'user_info.user_name',
+                    headerFilter: 'input'
+                },
+                {
+                    title: 'Email',
+                    field: 'user_info.user_email',
+                    headerFilter: 'input'
+                },
+                {
+                    title: 'Role',
+                    field: 'user_info.role_name',
+                    formatter: roleBadge,
+                    headerFilter: 'list',
+                    headerFilterParams: {
+                        values: ['', 'ADMIN', 'USER']
+                    },
+                    width: 120,
+                },
+                {
+                    title: 'Joined',
+                    field: 'user_info.user_registration_date',
+                    sorter: 'datetime',
+                    width: 130
+                },
+                {
+                    title: 'Actions',
+                    field: 'user_info.user_id',
+                    formatter: actionButtons,
+                    width: 100,
+                    headerSort: false,
+                    resizable: false
+
+                },
+            ],
+        });
+
+        document.getElementById('table-filter').addEventListener('input', (e) => {
+            const value = e.target.value;
+            if (value) {
+                table.setFilter([
+                    [{
+                            field: 'user_info.user_name',
+                            type: 'like',
+                            value: value
+                        },
+                        {
+                            field: 'user_info.user_email',
+                            type: 'like',
+                            value: value
+                        },
+                    ],
+                ]);
+            } else {
+                table.clearFilter();
+            }
+        });
+
+        document
+            .getElementById('export-csv')
+            .addEventListener('click', () => table.download('csv', 'users.csv'));
+        document
+            .getElementById('export-json')
+            .addEventListener('click', () => table.download('json', 'users.json'));
+        document
+            .getElementById('print-table')
+            .addEventListener('click', () => table.print(false, true));
+    });
+</script>

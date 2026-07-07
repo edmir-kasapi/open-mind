@@ -6,25 +6,22 @@ function isHomeButtonActive()
 
         case 'USER' :
             if($_SERVER["REQUEST_URI"] != "/OpenMind/mainMenu")
-                { 
-                    return true;
-                }
+            { 
+                return true;
+            }
                 
-                return false;
-                break;
+            return false;
+            break;
 
         case 'ADMIN' :
-            if($_SERVER["REQUEST_URI"] != "/OpenMind/adminMenu")
-                { 
-                    return true;
-                }
+            if( !str_contains($_SERVER["REQUEST_URI"], "/OpenMind/adminMenu") )
+            {
+                 return true;
+            }
                 
-                return false;
-                break;
-    
-    }
-
-    
+            return false;
+            break;
+    }   
 }
 
 ?>

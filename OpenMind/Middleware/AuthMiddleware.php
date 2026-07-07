@@ -36,9 +36,6 @@ class AuthMiddleware
 
         if( $_SESSION['user'] != 'USER' )
         {
-
-            
-
             switch($_SESSION['user']['user_info']['role_name']){
 
                 case 'ADMIN':
@@ -83,7 +80,8 @@ class AuthMiddleware
                 break;
             
             case 'ADMIN':
-                header("Location: ./adminMenu");
+                $start = 1;
+                header("Location: ./adminMenu?currentPage={$start}");
                 break;
             
             default:

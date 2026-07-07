@@ -14,7 +14,9 @@ require_once('CustomExceptions/InvalidTokenException.php');
 class AuthController extends Controller
 {   
     private $authService;
+    private $userService;
     private $authMiddleware;
+    
 
     public function __construct()
     {
@@ -75,8 +77,10 @@ class AuthController extends Controller
             $name = filter_input(INPUT_POST, 'registerName', FILTER_SANITIZE_SPECIAL_CHARS);
             $email = filter_input(INPUT_POST, 'registerEmail', FILTER_SANITIZE_EMAIL);
             $password = filter_input(INPUT_POST, 'registerPassword', FILTER_SANITIZE_SPECIAL_CHARS);
+            
+            $role = 2; //We are registering a simple user here, not an admin
 
-            $this -> authService -> registerUser($name, $email, $password);
+            $this -> authService -> registerUser($name, $email, $password, $role);
             $_SESSION['messages']['success'] = "Registration Successful!";
 
             unset($_SESSION['autofill']['reg_name_fill']);
@@ -198,7 +202,6 @@ class AuthController extends Controller
             
         }
 
-        var_dump($_POST);
     }
 
     public function logOut()

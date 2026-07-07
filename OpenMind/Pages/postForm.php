@@ -20,7 +20,7 @@ $title = "Post";
 
         <div class="form-group mt-2" enctype="multipart/formdata">
             <label class="form-label">Content</label>
-            <textarea class="form-control" id="post-content" name="postContent" rows="3" required> <?php if(isset( $_SESSION['autofill']['content_fill'])){ echo  $_SESSION['autofill']['content_fill']; }?> </textarea>
+            <textarea class="form-control" id="post-content" name="postContent" rows="3" required><?php if(isset( $_SESSION['autofill']['content_fill'])){ echo  $_SESSION['autofill']['content_fill']; }?></textarea>
         </div>
 
         <div class="form-group mt-2">
