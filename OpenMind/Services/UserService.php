@@ -40,9 +40,9 @@ class UserService
 
     public function deleteUser($user)
     {
-        $picture = $user['user_profile']['photo_hash_name'] .'.'. $user['user_profile']['photo_extension'];;
+        $picture = $user['user_profile'] -> __get('photo_hash_name') .'.'. $user['user_profile'] -> __get('photo_extension');
         $this -> removeProfilePicture($picture);
-        $this -> userRepository -> deleteUserInfo($user['user_info']['user_id']);
+        $this -> userRepository -> deleteUserInfo($user['user_info'] -> __get('user_id'));
 
     }
 

@@ -23,12 +23,12 @@ $title = "Profile";
 
                     <div class="form-group">
                         <label class="form-label">Username:</label>
-                        <input type="text" name="editName" class="form-control" placeholder="Enter username here..." value="<?php echo $user['user_info']["user_name"]?>"> 
+                        <input type="text" name="editName" class="form-control" placeholder="Enter username here..." value="<?php echo $user['user_info'] -> __get('user_name')?>"> 
                     </div>
 
                     <div class="form-group mt-2">
                         <label class="form-label">Email:</label>
-                        <input type="email" name="editEmail" class="form-control" placeholder="Enter email here..." value=<?php echo $user['user_info']["user_email"]?>>
+                        <input type="email" name="editEmail" class="form-control" placeholder="Enter email here..." value=<?php echo $user['user_info'] -> __get('user_email'); ?>>
                     </div>
 
                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >

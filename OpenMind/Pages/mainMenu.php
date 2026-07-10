@@ -29,12 +29,12 @@ $title = "Main Menu";
                 <div class="card-body ">
 
                     <a class="navbar-brand">
-                        <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInfo['user_profile']['photo_hash_name'] .'.'. $userInfo['user_profile']['photo_extension']; ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
-                        <strong><?php echo $userInfo['user_info']['user_name']; ?></strong> 
+                        <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInfo['user_profile'] -> __get('photo_hash_name') .'.'. $userInfo['user_profile'] -> __get('photo_extension'); ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
+                        <strong><?php echo $userInfo['user_info'] -> __get('user_name'); ?></strong> 
                     </a>
 
                     <section class="my-3">
-                        <p class="card-text"><?php echo $postInfo["post_content"] ?></p>
+                        <p class="card-text"><?php echo $postInfo -> __get('post_content'); ?></p>
                     </section>
 
                     <?php if($post['post_pictures']): ?>
@@ -49,7 +49,7 @@ $title = "Main Menu";
                                 <?php $i = 1;?>
                                 <?php foreach($postPictures as $picture):?>
 
-                                    <?php $image = $picture['photo_hash_name'] .'.'. $picture['photo_extension']; ?>
+                                    <?php $image = $picture -> __get('photo_hash_name') . '.' . $picture -> __get('photo_extension'); ?>
                                     
                                     <div class="carousel-item <?php if($i === 1){echo "active"; } ?> h-100 position-relative">
                                         <div class="container" style="z-index:1;">
@@ -80,13 +80,13 @@ $title = "Main Menu";
 
                     
 
-                    <?php if($user['user_info']['user_id'] == $userInfo['user_info']["user_id"]): ?>
-                        <a href="./inspectPost?idToEdit= <?php echo $postInfo['post_id'] ?>" >
+                    <?php if($user['user_info']->__get('user_id') == $userInfo['user_info'] -> __get('user_id')): ?>
+                        <a href="./inspectPost?idToEdit= <?php echo $postInfo -> __get('post_id') ?>" >
                             <button class="btn btn-warning mt-3"> Edit Post </button>
                         </a>
                     <?php endif;?>
 
-                    <p class="card-text mt-3"><small class="text-body-secondary">Posted at <?php echo $postInfo['date_created']; ?></small></p>
+                    <p class="card-text mt-3"><small class="text-body-secondary">Posted at <?php echo $postInfo -> __get('date_created'); ?></small></p>
                     
                     <!--<a href="#" class="btn btn-primary">Button</a>-->
                 </div>

@@ -7,12 +7,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <?php if(isset($_SESSION['user'])): ?>
+                <?php if(isset($user)): ?>
+
                         <li class="nav-item dropdown">
                             <?php
                                 include("navbarDropdown.php");
                             ?>
                         </li>
+                        
                         <li class="nav-item">
                             <?php
                                 include("homeButton.php");
@@ -20,7 +22,7 @@
                             ?> 
                         </li>
 
-                        <?php if($_SESSION['user']['user_info']['role_name'] === 'USER' ): ?>
+                        <?php if($user['user_info'] -> __get('role_name') === 'USER' ): ?>
                             <li class="nav-item dropdown">
                                 <?php
 

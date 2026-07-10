@@ -40,15 +40,37 @@ class AdminController extends Controller
 
         $admin = $_SESSION['user'];
 
-        $currentPage = $this -> adminMiddleware -> nullCurrentPageGuard();
-        $totalResult = $this -> adminService -> getUserCount($admin['user_info']['user_id']);
-        $totalValue = $totalResult[0]['value'];
-        $this -> adminMiddleware -> paginationGuard($currentPage, $totalValue);
+        //$currentPage = $this -> adminMiddleware -> nullCurrentPageGuard();
+        //$totalResult = $this -> adminService -> getUserCount($admin['user_info'] -> __get('user_id'));
+        //$totalValue = $totalResult[0]['value'];
+        //$this -> adminMiddleware -> paginationGuard($currentPage, $totalValue);
 
-        $users = $this -> adminService -> getUserData($admin['user_info']['user_id'], $currentPage);
+        $stats = $this -> adminService -> getStats($admin['user_info'] -> __get('user_id'));
+
+        $this -> render('adminMenu', ['user' => $admin, 'stats' => $stats]);
+    }
+
+    public function showUsersDirectory()
+    {
+        $this -> authMiddleware -> adminGuard();
+
+        $admin = $_SESSION['user'];
+
+        $currentPage = $this -> adminMiddleware -> nullCurrentPageGuard();
+        $options = $this -> adminMiddleware -> getSearchOptions();
+
+        $users = $this -> adminService -> getUserData($admin['user_info'] -> __get('user_id'), $currentPage, $options);
         $userCount = count($users);
 
-        $this -> render('adminMenu', ['user' => $admin, 'usersList' => $users, 'userCount' => $userCount, 'currentPage' => $currentPage, 'total' => $totalValue]);
+        $totalResult = $this -> adminService -> getUserCount($admin['user_info'] -> __get('user_id'), $options);  
+        $totalValue = $totalResult[0]['value'];
+
+        $this -> adminMiddleware -> paginationGuard($currentPage, $totalValue);
+
+        
+
+        $this -> render('adminUsersDirectory', ['user' => $admin, 'usersList' => $users, 'userCount' => $userCount, 'currentPage' => $currentPage, 'total' => $totalValue, 'options' => $options]);
+   
     }
 
     public function showInspectUser()
@@ -145,7 +167,7 @@ class AdminController extends Controller
             $this -> adminMiddleware -> editRoleGuard($userInfo);
 
             $profilePicture = $_FILES["profilePicture"];
-            $originalPicture = $userInfo['user_profile']['photo_hash_name'] .'.'. $userInfo['user_profile']['photo_extension'];
+            $originalPicture = $userInfo['user_profile'] -> __get('photo_hash_name') .'.'. $userInfo['user_profile'] -> __get('photo_extension');
 
             $this -> userService -> changeProfilePicture($id, $profilePicture, $originalPicture);
 
@@ -182,7 +204,7 @@ class AdminController extends Controller
             $userInfo = $this -> userService -> getuserInfoId($id);
             $this -> adminMiddleware -> editRoleGuard($userInfo);
 
-            $profilePicture = $userInfo['user_profile']['photo_hash_name'] .'.'. $userInfo['user_profile']['photo_extension'];
+            $profilePicture = $userInfo['user_profile'] -> __get('photo_hash_name') .'.'. $userInfo['user_profile'] -> __get('photo_extension');
 
             $this -> userService -> clearProfilePicture($id,  $profilePicture);
 
@@ -250,7 +272,7 @@ class AdminController extends Controller
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $idUser);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info']-> __get('user_id'), $idUser);
 
             $this -> postService -> editPostContent($idPost, $idUser, $content);
 
@@ -286,7 +308,7 @@ class AdminController extends Controller
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $idUser);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $idUser);
 
             $this -> postService -> addPostPhotos($idPost, $photos);
             $_SESSION['messages']['success'] = "Photos added successfully!";
@@ -321,7 +343,7 @@ class AdminController extends Controller
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $idUser);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $idUser);
 
             $this -> postService -> removePostImage($idPhoto, $idPost);
             $_SESSION['messages']['success'] = "Photo removed successfully!";
@@ -353,7 +375,7 @@ class AdminController extends Controller
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $idUser);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $idUser);
 
             $this -> postService -> deletePost($post, $idUser);
             
@@ -416,13 +438,14 @@ class AdminController extends Controller
             $idUser = filter_input(INPUT_POST, 'userId', FILTER_VALIDATE_INT);
             $user = $this -> userService -> getUserInfoId($idUser);
             $this -> adminMiddleware -> nullUserGuard($user);
+            $this -> adminMiddleware -> editRoleGuard($user);
 
-            $this -> postService -> deleteAllUserPosts($idUser);
-            $this -> userService -> deleteUser($user);
+            //$this -> postService -> deleteAllUserPosts($idUser);
+            //$this -> userService -> deleteUser($user);
          
-            $_SESSION['messages']['success'] = "User deleted succeessfully.";
+            $_SESSION['messages']['success'] = 'User deleted successfully';
             $this -> authMiddleware ->resetTokenTime();
-            header("Location: ./adminMenu");
+            header("Location: ./usersDirectory");
             
         } catch (PDOException | ValidationException $e) {
 
@@ -467,7 +490,7 @@ class AdminController extends Controller
 
         } finally {
 
-            header("Location: ./adminMenu");
+            header("Location: ./usersDirectory");
         }
     }
   

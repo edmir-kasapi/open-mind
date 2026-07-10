@@ -20,6 +20,16 @@
           </li>
 
           <li class="nav-item">
+            <a href="./usersDirectory" class="nav-link">
+              <i class="nav-icon bi bi-people"></i>
+              <p>
+                Users
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
             <a href="./allPosts" class="nav-link">
               <i class="nav-icon bi bi-files"></i>
               <p>

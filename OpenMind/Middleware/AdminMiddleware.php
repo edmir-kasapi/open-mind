@@ -27,21 +27,34 @@ class AdminMiddleware
 
         if($currentPage <= 0)
         {
-            header("Location: ./adminMenu?currentPage=1");
+            header("Location: ./usersDirectory?currentPage=1");
             return;
         }
 
         if(($currentPage > $totalPages) && ($totalPages > 0))
         {
-            header("Location: ./adminMenu?currentPage={$totalPages}");
+            header("Location: ./usersDirectory?currentPage={$totalPages}");
             return;
         }
     }
 
+    public function getSearchoptions()
+    {
+        $options = [
+            'name_email_filter' => ($_GET['nameFilter'] ?? null),
+            'category_filter' => ($_GET['categoryFilter'] ?? 'ALL'),
+        ];
+
+        return $options;
+    }
+
     public function editRoleGuard($user)
     {
-        if($user['user_info']['role_name'] == 'ADMIN' )
+        $_SESSION['messages']['error'] = $user['user_info'] -> __get('role_name');
+
+        if($user['user_info'] -> __get('role_name') == 'ADMIN' )
         {
+            
             header("Location: ./404");
             return;
         }

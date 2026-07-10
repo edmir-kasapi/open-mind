@@ -1,5 +1,5 @@
 <!--begin::Delete User Modal-->
-                                    <div class="modal fade" id="modal-delete-user-<?php echo $user['user_info']["user_id"] ?>" tabindex="-1" aria-labelledby="modal-delete-user-label" aria-hidden="true">
+                                    <div class="modal fade" id="modal-delete-user-<?php echo $cnt ?>" tabindex="-1" aria-labelledby="modal-delete-user-label" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                         <div class="modal-header">
@@ -19,7 +19,7 @@
                                             </button>
 
                                             <form action="./deleteUser" method="post">
-                                                <input type="hidden" name="userId" value=<?php echo $user['user_info']["user_id"] ?> >
+                                                <input type="hidden" name="userId" value=<?php echo $user['user_info'] -> __get('user_id') ?> >
                                                 <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
                                                 <input type="submit" class="btn btn-outline-danger" value="Delete User">
                                             </form> 

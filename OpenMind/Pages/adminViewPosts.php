@@ -13,27 +13,24 @@ $title = "Main Menu";
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
-
     <?php include("Components/Sidebar/sidebar.php"); ?>
     <?php include("Components/Navbar/adminNavbar.php"); ?>
 
     <main class="app-main p-1" id="main" tabindex="-1">
 
         <h1 class="w-25 mx-auto text-center display-4 mt-3">Viewing posts of user:</h1>
-        <h1 class="w-25 mx-auto text-center display-4 mt-1"><?php echo $userInspected['user_info']['user_name'] ?></h1>
+        <h1 class="w-25 mx-auto text-center display-4 mt-1"><?php echo $userInspected['user_info'] -> __get('user_name') ?></h1>
 
         <div class="w-25 mx-auto mt-3 ">
             <div class="btn-group gap-3 d-flex justify-content-center" role="group">
-                <a href="./inspectUser?editingUser=<?php echo $userInspected['user_info']['user_id']; ?>">
+                <a href="./inspectUser?editingUser=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>">
                     <button class="btn btn-dark"> Back </button>
                 </a>
 
                 <form action="./deleteAllUserPosts" method="post">
-                    <input type="hidden" name="userId" value=<?php echo $userInspected['user_info']['user_id']; ?>>
+                    <input type="hidden" name="userId" value=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>>
                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
-                    <input type="submit" value="Delete All Posts" class="btn btn-danger <?php if (count($posts) <= 0) {
-                                                                                            echo "disabled";
-                                                                                        } ?> " onclick="return confirm('Are you sure you want to delete all the posts of this user?')">
+                    <input type="submit" value="Delete All Posts" class="btn btn-danger <?php if (count($posts) <= 0) { echo "disabled"; } ?> " onclick="return confirm('Are you sure you want to delete all the posts of this user?')">
                 </form>
             </div>
         </div>
@@ -55,12 +52,12 @@ $title = "Main Menu";
                         <div class="card-body ">
 
                             <a class="navbar-brand">
-                                <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInfo['user_profile']['photo_hash_name'] . '.' . $userInfo['user_profile']['photo_extension']; ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
-                                <strong><?php echo $userInfo['user_info']['user_name']; ?></strong>
+                                <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInfo['user_profile'] -> __get('photo_hash_name') . '.' . $userInfo['user_profile'] -> __get('photo_extension'); ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" width="40" height="40" class=" rounded-circle ms-3">
+                                <strong><?php echo $userInfo['user_info'] -> __get('user_'); ?></strong>
                             </a>
 
                             <section class="my-3">
-                                <p class="card-text"><?php echo $postInfo["post_content"] ?></p>
+                                <p class="card-text"><?php echo $postInfo -> __get('post_content') ?></p>
                             </section>
 
                             <?php if ($post['post_pictures']): ?>
@@ -75,7 +72,7 @@ $title = "Main Menu";
                                         <?php $i = 1; ?>
                                         <?php foreach ($postPictures as $picture): ?>
 
-                                            <?php $image = $picture['photo_hash_name'] . '.' . $picture['photo_extension']; ?>
+                                            <?php $image = $picture -> __get('photo_hash_name') . '.' . $picture -> __get('photo_extension'); ?>
 
                                             <div class="carousel-item <?php if ($i === 1) {
                                                                             echo "active";
@@ -107,13 +104,25 @@ $title = "Main Menu";
                             <?php endif; ?>
 
 
-                            <?php if ($userInfo['user_info']['role_name'] == 'USER'): ?>
-                                <a href="./inspectUserPost?editingPost= <?php echo $postInfo['post_id'] ?>">
-                                    <button class="btn btn-warning mt-3"> Edit Post </button>
-                                </a>
+                            <?php if ($userInfo['user_info'] -> __get('role_name') == 'USER'): ?>
+
+                                <div class="btn-group gap-3 mt-3" role="group">
+                                    <a href="./inspectUserPost?editingPost= <?php echo $postInfo -> __get('post_id'); ?>">
+                                        <button class="btn btn-warning"> Edit Post </button>
+                                    </a>
+
+                                    <form action="./adminRemovePost" method="post">
+
+                                        <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
+                                        <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>>
+                                        <input type="hidden" name="deleteId" value=<?php echo $postInfo ->  __get('post_id'); ?>>
+                                        <input type="submit" name="postReq" value="Delete Post" onclick="return confirm('Are you sure you want to delete this post?')" class=" btn btn-danger">
+                                    </form>
+                                </div>
+                                
                             <?php endif; ?>
 
-                            <p class="card-text mt-3"><small class="text-body-secondary">Posted at <?php echo $postInfo['date_created']; ?></small></p>
+                            <p class="card-text mt-3"><small class="text-body-secondary">Posted at <?php echo $postInfo -> __get('date_created'); ?></small></p>
 
                             <!--<a href="#" class="btn btn-primary">Button</a>-->
                         </div>
@@ -137,5 +146,6 @@ $title = "Main Menu";
 
 </html>
 
-
 <?php include("Pages/Components/Toasts/toastScript.php"); ?>
+
+

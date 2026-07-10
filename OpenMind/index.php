@@ -1,6 +1,10 @@
 <?php
 
+require 'Routing/routes.php';
+
 session_start();
+
+//session_destroy();
 
 if(!isset($_SESSION['token']))
 {
@@ -9,7 +13,7 @@ if(!isset($_SESSION['token']))
 }
 
 
-require 'Routing/routes.php';
+
 
 $router -> dispatch();
 

@@ -20,7 +20,9 @@ class AuthService{
         $this -> validateLoginData($email, $password);
         $result = $this -> userRepository -> verifyLoginCredentials($email, $password);
 
-        if(empty($result))
+        var_dump($result);
+
+        if(!$result)
         {
             throw new UserNotFoundException('Invalid credentials Entered');
         }
@@ -286,14 +288,14 @@ class AuthService{
     {
         $result = $this -> userRepository -> getUserInfoByEmail($email);
 
-        return md5($password) == $result['user_info']['user_password'];
+        return md5($password) == $result['user_password'];
     }
 
     private function isSameAsOldPasswordById($id, $password)
     {
         $result = $this -> userRepository -> getUserInfo($id);
 
-        return md5($password) == $result['user_info']['user_password'];
+        return md5($password) == $result['user_info'] -> __get('user_password');
     }
 
 }

@@ -2,7 +2,8 @@
 
 class DBConnection
 {
-    private static $connection = null;
+    private static ?PDO $connection = null;
+
     private static $host = "localhost";
     private static $username = "root";
     private static $password = "";

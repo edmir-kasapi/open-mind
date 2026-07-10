@@ -79,7 +79,7 @@
             <!--begin::User Menu Dropdown-->
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <span class="d-none d-md-inline"><?php echo $user['user_info']['user_name'] ?></span>
+                <span class="d-none d-md-inline"><?php echo $user['user_info'] -> __get('user_name'); ?></span>
               </a>
               <ul class="dropdown-menu dropdown-menu dropdown-menu-end">
                 <!--begin::Menu Body-->

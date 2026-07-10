@@ -1,87 +1,57 @@
 <?php
 
 require_once('Repository.php');
+require_once('Models/Post.php');
 
 class PostRepository extends Repository
 {
     function createUserPost($id, $content, $photos)
     {
-        $query = "INSERT INTO posts(user_id, post_content, date_created)
-                  VALUES ( :userID, :content, CURRENT_TIMESTAMP() );";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":userID" => $id,
-            ":content" => $content
-            ]);
-
-        $postId = $this -> pdo ->lastInsertID();
+        $postId = Post::store([
+            'user_id' => $id,
+            'post_content' => $content,
+            'date_created' =>  date("Y/m/d")
+        ]);
 
         $this -> insertPostPhotos($postId, $photos);
-        
     }
 
     public function getAllPosts()
     {
-        $query = "SELECT * FROM posts;";
-        $statement = $this -> pdo -> prepare($query);
+        $postData = Post::all();
 
-        $statement -> execute();
-
-        $postData = $statement -> fetchAll(PDO::FETCH_ASSOC);
         return $postData;
     }
 
     public function getUserPosts($id)
     {
-        $query = "SELECT * FROM posts WHERE user_id = :userId";
-        $statement = $this -> pdo -> prepare($query);
+        $result = Post::where('user_id', '=', $id)
+                ->getAllModels();;
 
-        $statement -> execute([
-            ":userId" => $id
-        ]);
-
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
     public function getPostInfo($id)
     {
-        $query = "SELECT * FROM posts WHERE post_id = :postId;";
-        $statement = $this -> pdo -> prepare($query);
+        $result = Post::find($id);
 
-        $statement -> execute([
-            ":postId" => $id
-        ]);
-
-        $result = $statement -> fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
     public function getPostPhotos($id)
     {
-        $query = "SELECT * FROM photos WHERE post_id = :postId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":postId" => $id
-        ]);
-
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $result =Photo::where('post_id', '=', $id)
+                ->getAllModels();
 
         return $result;
     }
 
     public function updatePostContent($idPost, $idUser, $content)
     {
-        $query = "UPDATE posts SET post_content = :postContent WHERE post_id = :postId AND user_id = :userId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":postContent" => $content,
-            ":postId" => $idPost,
-            ":userId" => $idUser
-        ]);
+        Post::update(['post_content' => $content])
+            -> where('post_id', '=', $idPost)
+            -> where('user_id', '=', $idUser)
+            -> execute(); 
     }
 
     public function insertPostPhotos($id, $photos)
@@ -94,56 +64,52 @@ class PostRepository extends Repository
 
     public function getPostPhotoInfo($idPhoto, $idPost)
     {
-        $query = "SELECT * FROM photos WHERE photo_id = :photoId AND post_id = :postId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":photoId" => $idPhoto,
-            ":postId" => $idPost
-        ]);
-
-        $result = $statement -> fetch(PDO::FETCH_ASSOC);
+        $result = Photo::find($idPhoto);
 
         return $result;
     }
 
     public function removePhoto($idPhoto, $idPost)
     {
-        $query = "DELETE FROM photos WHERE photo_id = :photoId AND post_id = :postId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":photoId" => $idPhoto,
-            ":postId" => $idPost
-        ]);
+        Photo::destroy($idPhoto);
     }
 
     public function deletePost($idPost, $idUser)
     {
-        $query = "DELETE FROM posts WHERE post_id = :postId AND user_id = :userId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":postId" => $idPost,
-            ":userId" => $idUser
-        ]);
+        Post::destroy($idPost);
     }
 
     private function addPostPhoto($id, $picture)
     {
-        $query2 = "INSERT INTO photos(photo_hash_name, photo_original_name, photo_extension, photo_size, photo_type, post_id)
-                   VALUES (:photoHashName, :photoOriginalName, :photoExtension, :photoSize, :photoType, :postId);";
-        $statement2 = $this -> pdo -> prepare($query2);
-        $statement2 -> execute([
-            ":photoHashName" => $picture['hashed_name'],
-            ":photoOriginalName" => $picture['original_name'],
-            ":photoExtension" => $picture['extension'],
-            ":photoSize" => $picture['size'],
-            ":photoType" => 'POST',
-            ":postId" => $id
-        ]);
+       Photo::store([
+                "photo_hash_name" => $picture['hashed_name'],
+                "photo_original_name" => $picture['original_name'],
+                "photo_extension" => $picture['extension'],
+                "photo_size" => $picture['size'],
+                "photo_type" => 'POST',
+                "post_id" => $id
+            ]);
     }
 
+    public function getAllPostsCount($id)
+    {
+        $result = Post::count('post_id')
+            -> where('user_id', '!=', $id)
+            -> getAll();
+
+        return $result;
+    }
+
+    public function getPostPicturesCount($id)
+    {
+        $result = Photo::count('photo_id')
+            -> join('posts', 'posts.post_id', '=', 'photos.post_id')
+            -> where('photo_type', '=', 'POST')
+            -> where('posts.user_id', '!=', $id)
+            -> getAll();
+
+        return $result;
+    }
 }
 
 ?>

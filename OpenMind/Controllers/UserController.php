@@ -64,7 +64,7 @@ class UserController extends Controller
         $post = $this -> postService -> getPostInfo($id);
 
         $this -> postMiddleware -> nullPostGuard($post);
-        $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $user['user_info']['user_id']);
+        $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $user['user_info'] -> __get('user_id'));
 
         $this -> render('inspectPost', ['user' => $user, 'post' => $post]);
         
@@ -77,8 +77,8 @@ class UserController extends Controller
             $this -> authMiddleware -> tokenGuard($_POST['_token'], $_SESSION['token']);
 
             $profilePicture = $_FILES["profilePicture"];
-            $originalPicture = $_SESSION['user']['user_profile']['photo_hash_name'] .'.'. $_SESSION['user']['user_profile']['photo_extension'];
-            $id = $_SESSION['user']['user_info']['user_id'];
+            $originalPicture = $_SESSION['user']['user_profile'] -> __get('photo_hash_name') .'.'. $_SESSION['user']['user_profile'] -> __get('photo_extension');
+            $id = $_SESSION['user']['user_info'] -> __get('user_id');
             
             $this -> userService -> changeProfilePicture($id, $profilePicture, $originalPicture);
 
@@ -113,8 +113,8 @@ class UserController extends Controller
 
             $this -> authMiddleware -> tokenGuard($_POST['_token'], $_SESSION['token']);
 
-            $profilePicture = $_SESSION['user']['user_profile']['photo_hash_name'] .'.'. $_SESSION['user']['user_profile']['photo_extension'];
-            $id = $_SESSION['user']['user_info']['user_id'];
+            $profilePicture = $_SESSION['user']['user_profile'] -> __get('photo_hash_name') .'.'. $_SESSION['user']['user_profile'] -> __get('photo_extension');
+            $id = $_SESSION['user']['user_info'] -> __get('user_id');
             
             $this -> userService -> clearProfilePicture($id,  $profilePicture);
 
@@ -143,7 +143,7 @@ class UserController extends Controller
 
             $this -> authMiddleware -> tokenGuard($_POST['_token'], $_SESSION['token']);
             
-            $id = $_SESSION['user']['user_info']['user_id'];
+            $id = $_SESSION['user']['user_info'] -> __get('user_id');
             $content = filter_input(INPUT_POST, 'postContent', FILTER_SANITIZE_SPECIAL_CHARS);
             $photos = $_FILES['postPictures'];
             
@@ -182,9 +182,9 @@ class UserController extends Controller
             $post = $this -> postService -> getPostInfo($id); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $user['user_info']['user_id']);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info']-> __get('user_id'), $user['user_info'] -> __get('user_id'));
 
-            $this -> postService -> editPostContent($id, $user['user_info']['user_id'], $content);
+            $this -> postService -> editPostContent($id, $user['user_info'] -> __get('user_id'), $content);
 
             unset($_SESSION['autofill']['edit_content_fill']);
             $_SESSION['messages']['success'] = "Content edited successfully!";
@@ -219,7 +219,7 @@ class UserController extends Controller
             $post = $this -> postService -> getPostInfo($id); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $user['user_info']['user_id']);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $user['user_info'] -> __get('user_id'));
 
             $this -> postService -> addPostPhotos($id, $photos);
             $_SESSION['messages']['success'] = "Photos added successfully!";
@@ -251,10 +251,8 @@ class UserController extends Controller
             $idPost = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT); 
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
-            var_dump($post);
-
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $user['user_info']['user_id']);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $user['user_info'] -> __get('user_id'));
 
             $this -> postService -> removePostImage($idPhoto, $idPost);
             $_SESSION['messages']['success'] = "Photo removed successfully!";
@@ -289,9 +287,9 @@ class UserController extends Controller
             $post = $this -> postService -> getPostInfo($idPost); //post is retrieved to check
 
             $this -> postMiddleware -> nullPostGuard($post);
-            $this -> postMiddleware -> idMismatchGuard($post['post_info']['user_id'], $user['user_info']['user_id']);
+            $this -> postMiddleware -> idMismatchGuard($post['post_info'] -> __get('user_id'), $user['user_info'] -> __get('user_id'));
 
-            $this -> postService -> deletePost($post, $user['user_info']['user_id']);
+            $this -> postService -> deletePost($post, $user['user_info'] -> __get('user_id'));
             
             $_SESSION['messages']['success'] = "Post deleted.";
             $this -> authMiddleware ->resetTokenTime();

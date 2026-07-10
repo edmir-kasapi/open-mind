@@ -4,14 +4,16 @@ $title = "Inspect Post";
 
 $contentFill = "";
 
+$postInfo = $post['post_info'];
+
 if(!isset($_SESSION['autofill']['edit_content_fill']))
 {
-    $contentFill = $post['post_info']['post_content'];
+    $contentFill = $postInfo -> __get('post_content');
 }
 else
 {
     $contentFill = $_SESSION['autofill']['edit_content_fill'];
-}
+} 
 
 ?>
 
@@ -39,7 +41,7 @@ else
                     </div>
 
                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
-                    <input type="hidden" name="editId" value=<?php echo $post['post_info']['post_id'] ?> >
+                    <input type="hidden" name="editId" value=<?php echo $postInfo -> __get('post_id') ?> >
                     <input type="submit" name="postReq" value="Edit" class="mt-4 btn btn-dark">
                 </form>
             </div>
@@ -54,7 +56,7 @@ else
                     </div>
 
                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
-                    <input type="hidden" name="editId" value=<?php echo $post['post_info']['post_id'] ?> >
+                    <input type="hidden" name="editId" value=<?php echo $postInfo -> __get('post_id'); ?> >
                     <input type="submit" name="postReq" value="Add" class="mt-4 btn btn-dark">
                 </form>
             </div>
@@ -67,6 +69,7 @@ else
             <section class="form-floating w-75 border border-black p-3 rounded-3 mt-4">
 
                 <?php if($post['post_pictures']): ?>
+                    
                     <?php 
                         $id = "carouselExample"; 
                     ?>
@@ -77,7 +80,7 @@ else
                             <?php $i = 1;?>
                             <?php foreach($post['post_pictures'] as $picture):?>
 
-                                <?php $image = $picture['photo_hash_name'] .'.'. $picture['photo_extension']; ?>
+                                <?php $image = $picture -> __get('photo_hash_name') . '.' . $picture -> __get('photo_extension'); ?>
                                             
                                 <div class="carousel-item <?php if($i === 1){echo "active"; } ?> h-100 position-relative">
                                     <div class="container" style="z-index:1;">
@@ -86,8 +89,8 @@ else
                                         <form action="./deleteImage" method="post">
 
                                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token']; ?> >
-                                            <input type="hidden" name="postId" value=<?php echo $post['post_info']['post_id']; ?> >
-                                            <input type="hidden" name="imageId" value=<?php echo $picture['photo_id']; ?> >
+                                            <input type="hidden" name="postId" value=<?php echo $postInfo -> __get('post_id'); ?> >
+                                            <input type="hidden" name="imageId" value=<?php echo $picture -> __get('photo_id'); ?> >
                                             
                                             <input type="submit"class="btn btn-danger position-absolute top-0 ms-2 mt-sm-1 translate-middle-x" style="z-index:999; width: 37px;" value="X">
                                     
@@ -123,7 +126,7 @@ else
                 <form action="./deletePost" method="post" >
 
                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
-                    <input type="hidden" name="deleteId" value=<?php echo $post['post_info']['post_id'] ?> >
+                    <input type="hidden" name="deleteId" value=<?php echo $postInfo -> __get('post_id'); ?> >
                     <input type="submit" name="postReq" value="Delete Post" onclick="return confirm('Are you sure you want to delete this post?')" class="mt-4 btn btn-danger">
 
                 </form>

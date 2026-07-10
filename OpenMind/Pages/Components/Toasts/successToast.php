@@ -1,4 +1,4 @@
-<div id="success-toast" class="toast align-items-center bg-success text-white z-3 position-absolute top-0 start-50 translate-middle-x" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+<div id="success-toast" class="toast align-items-center bg-success text-white position-fixed bottom-0 end-0 p-3" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
         <div class="d-flex">
             <div class="toast-body">
             <?php 

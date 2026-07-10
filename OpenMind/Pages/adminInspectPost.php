@@ -5,7 +5,7 @@ $title = "Inspect Post";
 $contentFill = "";
 
 if (!isset($_SESSION['autofill']['edit_content_fill'])) {
-    $contentFill = $post['post_info']['post_content'];
+    $contentFill = $post['post_info'] -> __get('post_content');
 } else {
     $contentFill = $_SESSION['autofill']['edit_content_fill'];
 }
@@ -24,8 +24,8 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
     <?php include("Components/Sidebar/sidebar.php"); ?>
     <?php include("Components/Navbar/adminNavbar.php"); ?>
 
-    <h1 class="text-center display-4">You are now inspecting post #<?php echo $post['post_info']['post_id'] ?></h1>
-    <h1 class="text-center display-4">of user <?php echo $post['post_user']['user_info']['user_name'] ?></h1>
+    <h1 class="text-center display-4">You are now inspecting post #<?php echo $post['post_info']-> __get('user_id') ?></h1>
+    <h1 class="text-center display-4">of user <?php echo $post['post_user']['user_info']-> __get('user_id') ?></h1>
 
     <main class="app-main" id="main" tabindex="-1">
 
@@ -52,8 +52,8 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
                             </div>
 
                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
-                            <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info']['user_id'] ?>>
-                            <input type="hidden" name="editId" value=<?php echo $post['post_info']['post_id'] ?>>
+                            <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>>
+                            <input type="hidden" name="editId" value=<?php echo $post['post_info'] -> __get('post_id') ?>>
 
                             <div class="card-footer">
                                 <button class="btn btn-info" type="submit">Submit form</button>
@@ -83,8 +83,8 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
                             </div>
 
                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
-                            <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info']['user_id'] ?>>
-                            <input type="hidden" name="editId" value=<?php echo $post['post_info']['post_id'] ?>>
+                            <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>>
+                            <input type="hidden" name="editId" value=<?php echo $post['post_info'] -> __get('post_id') ?>>
 
                             <div class="card-footer">
                                 <button class="btn btn-primary" type="submit">Add Pictures</button>
@@ -116,7 +116,7 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
                                 <?php $i = 1; ?>
                                 <?php foreach ($post['post_pictures'] as $picture): ?>
 
-                                    <?php $image = $picture['photo_hash_name'] . '.' . $picture['photo_extension']; ?>
+                                    <?php $image = $picture -> __get('photo_hash_name') . '.' . $picture -> __get('photo_extension'); ?>
 
                                     <div class="carousel-item <?php if ($i === 1) {
                                                                     echo "active";
@@ -127,9 +127,9 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
                                             <form action="./adminRemovePhoto" method="post">
 
                                                 <input type="hidden" name="_token" value=<?php echo $_SESSION['token']; ?>>
-                                                <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info']['user_id'] ?>>
-                                                <input type="hidden" name="postId" value=<?php echo $post['post_info']['post_id']; ?>>
-                                                <input type="hidden" name="imageId" value=<?php echo $picture['photo_id']; ?>>
+                                                <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>>
+                                                <input type="hidden" name="postId" value=<?php echo $post['post_info'] -> __get('post_id'); ?>>
+                                                <input type="hidden" name="imageId" value=<?php echo $picture -> __get('photo_id'); ?>>
 
                                                 <input type="submit" class="btn btn-danger position-absolute top-0 ms-2 mt-sm-1 translate-middle-x" style="z-index:999; width: 37px;" value="X">
 
@@ -163,8 +163,8 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
 
                         <div class="d-flex btn-group gap-2" role="group">
 
-                            <a href="./viewUserPosts?viewingUser=<?php echo $post['post_user']['user_info']['user_id'] ?>">
-                                <button class="btn btn-dark"> Users Posts </button>
+                            <a href="./viewUserPosts?viewingUser=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>">
+                                <button class="btn btn-dark"> User's Posts </button>
                             </a>
 
                             <a href="./allPosts">
@@ -174,8 +174,8 @@ if (!isset($_SESSION['autofill']['edit_content_fill'])) {
                             <form action="./adminRemovePost" method="post">
 
                                 <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
-                                <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info']['user_id'] ?>>
-                                <input type="hidden" name="deleteId" value=<?php echo $post['post_info']['post_id'] ?>>
+                                <input type="hidden" name="userId" value=<?php echo $post['post_user']['user_info'] -> __get('user_id') ?>>
+                                <input type="hidden" name="deleteId" value=<?php echo $post['post_info'] -> __get('user_id') ?>>
                                 <input type="submit" name="postReq" value="Delete Post" onclick="return confirm('Are you sure you want to delete this post?')" class=" btn btn-danger">
                             </form>
 

@@ -2,7 +2,7 @@
 
 function isHomeButtonActive()
 {
-    switch(($_SESSION['user']['user_info']['role_name'])) {
+    switch(($_SESSION['user']['user_info'] -> __get('role_name'))) {
 
         case 'USER' :
             if($_SERVER["REQUEST_URI"] != "/OpenMind/mainMenu")

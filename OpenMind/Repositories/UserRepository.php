@@ -1,19 +1,23 @@
 <?php
 
 require_once('Repository.php');
+require_once('Models/User.php');
+require_once('Models/Photo.php');
 
 class UserRepository extends Repository
 {
+    private $defaultProfile = 'default_profile';
+    private $defaultExtension = '.png';
+    private $defaultSize = 0;
+    private $photoType = 'PROFILE';
+
     public function verifyLoginCredentials($email, $password)
     {
         $hashed = md5($password); //User's password gets hashed here if it is not null
 
-        $query = "SELECT * FROM users WHERE user_email = :userEmail AND user_password = :userPassword";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([":userEmail" => $email, 
-                               ":userPassword" => $hashed]);
-
-        $result = $statement -> fetch(PDO::FETCH_ASSOC);
+        $result = User::where('user_email', '=', $email)
+            ->where('user_password', '=', $hashed)
+            ->first();
 
         return $result;
     }
@@ -21,46 +25,33 @@ class UserRepository extends Repository
     public function registerUser($name, $email, $password, $role)
     {
         $hashed = md5($password);
-        $defaultProfile = 'default_profile';
-        $defaultExtension = '.png';
 
-        $query = "INSERT INTO users(user_name, user_email, user_password, user_registration_date, role_id) 
-                  VALUES (:userName, :userEmail, :userPassword, CURRENT_TIMESTAMP(), :roleId);";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> bindValue(":userName", $name, PDO::PARAM_STR);
-        $statement -> bindValue(":userEmail", $email, PDO::PARAM_STR);
-        $statement -> bindValue(":userPassword",  $hashed, PDO::PARAM_STR);
-        $statement -> bindValue(":roleId", $role, PDO::PARAM_INT);
-        $statement -> execute();
-
-        $id = $this -> pdo ->lastInsertID();
-
-        $query2 = "INSERT INTO photos(photo_hash_name, photo_original_name, photo_extension, photo_size, photo_type, user_id)
-                   VALUES (:photoHashName, :photoOriginalName, :photoExtension, :photoSize, :photoType, :userId);";
-        $statement2 = $this -> pdo -> prepare($query2);
-        $statement2 -> execute([
-            ":photoHashName" => $defaultProfile,
-            ":photoOriginalName" => $defaultProfile,
-            ":photoExtension" => $defaultExtension,
-            ":photoSize" => 0,
-            ":photoType" => 'PROFILE',
-            ":userId" => $id
+        $id = User::store([
+            'user_name' => $name,
+            'user_email' => $email,
+            'user_password' => $hashed,
+            'user_registration_date' => date("Y/m/d"),
+            'role_id' => $role
         ]);
-                
+
+        Photo::store([
+            'photo_hash_name' => $this->defaultProfile,
+            'photo_original_name' => $this->defaultProfile,
+            'photo_extension' => $this->defaultExtension,
+            'photo_size' => $this->defaultSize,
+            'photo_type' => $this->photoType,
+            'user_id' => $id
+        ]);
+
     }
 
     public function getUserInfo($id)
     {
-        $query = "SELECT * FROM users u, roles r 
-                  WHERE r.role_id = u.role_id AND u.user_id = :userId ";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([":userId" => $id]);
-        $infoResult = $statement -> fetch(PDO::FETCH_ASSOC);
-    
-        $query2 = "SELECT * FROM photos WHERE user_id = :userId";
-        $statement2 = $this -> pdo -> prepare($query2);
-        $statement2 -> execute([":userId" => $id]);
-        $profileResult = $statement2 -> fetch(PDO::FETCH_ASSOC);
+
+        $infoResult = User::find($id);
+
+        $profileResult = Photo::where('user_id', '=', $id)
+            ->firstModel();
 
         $fullresult = [
             'user_info' => $infoResult,
@@ -72,43 +63,37 @@ class UserRepository extends Repository
 
     public function getUserInfoByEmail($email)
     {
-        $query = "SELECT * FROM users WHERE user_email = :userEmail";
-        $statement = $this -> pdo -> prepare($query);
+        $result = User::where('user_email', '=', $email)
+            ->first();
 
-        $statement -> execute([":userEmail" => $email]);
-
-        $result = $statement -> fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
-    public function getAllUsersForAdmin($id, $currentPage)
+    public function getAllUsersForAdmin($id, $currentPage, $options)
     {
-        $offset = ($currentPage - 1) * 10;
+        $offset = ($currentPage - 1) * 10; //for pagination if it needs to be implemented
 
-        $query = "SELECT * FROM users 
-                  WHERE user_id != :userId
-                  ORDER BY user_registration_date DESC";
-        $statement = $this -> pdo -> prepare($query);
+        $name_email_no_filter = false;
+        $category_no_filter = false;
 
-        $statement -> execute([
-            ":userId" => $id,
-            ]);
+        if( is_null($options['name_email_filter']) || trim($options['name_email_filter'] ) === "")
+        {
+            $name_email_no_filter = true;
+        }
 
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
-        return $result;
+        if( is_null($options['category_filter']) || $options['category_filter'] === 'ALL' )
+        {
+            $category_no_filter = true;
+        }
 
-    }
 
-    public function getAllUsersCount($id)
-    {
-        $query = "SELECT COUNT(user_id) as value FROM users WHERE user_id != :userId";
-        $statement = $this -> pdo -> prepare($query);
+        $result = User::where('user_id', '!=', $id)
+            ->where('user_name', 'LIKE', '%'. $options['name_email_filter'] . "%", $name_email_no_filter)
+            ->where('role_id', '=',  $options['category_filter'] , $category_no_filter)
+            ->limit(10)
+            ->offset($offset)
+            ->getAllModels();
 
-        $statement -> execute([
-            ":userId" => $id,
-            ]);
-
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
@@ -116,131 +101,138 @@ class UserRepository extends Repository
     {
         $hashed = md5($password);
 
-        $query = "UPDATE users SET user_password = :userPassword WHERE user_email = :userEmail";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([
-            ":userPassword" => $hashed,
-            ":userEmail" => $email
-            ]);
+        User::update(['user_password' => $hashed])
+            ->where('user_email', '=', $email)
+            ->execute();
     }
 
-    public function changeUserName($id, $name)  : void
+    public function changeUserName($id, $name): void
     {
-        $query = "UPDATE users SET user_name = :userName WHERE user_id = :userId";
-        $statement = $this -> pdo -> prepare($query);
-        
-        $statement -> execute([
-            ":userName" => $name,
-            ":userId" => $id
-        ]);
-
+        User::update(['user_name' => $name])
+            ->where('user_id', '=', $id)
+            ->execute(); 
     }
 
-    public function changeUserEmail($id, $email) : void
+    public function changeUserEmail($id, $email): void
     {
-        $query = "UPDATE users SET user_email = :userEmail WHERE user_id = :userId ";
-        $statement = $this -> pdo -> prepare($query);
-        
-        $statement -> execute([
-            ":userEmail" => $email,
-            ":userId" => $id
-        ]);
+        User::update(['user_email' => $email])
+            ->where('user_id', '=', $id)
+            ->execute();
     }
 
-    public function changeUserPassword($id, $password) : void
+    public function changeUserPassword($id, $password): void
     {
         $hashed = md5($password);
 
-        $query = "UPDATE users SET user_password = :userPassword WHERE user_id = :userId";
-        $statement = $this -> pdo -> prepare($query);
-
-        $statement -> execute([
-            ":userPassword" => $hashed,
-            ":userId" => $id 
-        ]);
+        User::update(['user_password' => $hashed])
+            ->where('user_id', '=', $id)
+            ->execute();
     }
 
-    public function changeUserProfile($id, $picture) : void
+    public function changeUserProfile($id, $picture): void
     {
-        $query = "UPDATE photos 
-                    SET photo_hash_name = :photoHashName,  
-                        photo_original_name = :photoOriginalName,  
-                        photo_extension = :photoExtension, 
-                        photo_size = :photoSize 
-                    WHERE user_id = :userId";
-
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([
-            ":photoHashName" => $picture['hashed_name'],
-            ":photoOriginalName" => $picture['original_name'],
-            ":photoExtension" => $picture['extension'],
-            ":photoSize" => $picture['size'],
-            ":userId" => $id
-        ]);
+        Photo::update([
+                'photo_hash_name' => $picture['hashed_name'],
+                'photo_original_name' => $picture['original_name'],
+                'photo_extension' => $picture['extension'],
+                'photo_size' => $picture['size']
+            ])
+            ->where('user_id', '=', $id)
+            ->execute();
     }
 
-    public function removeUserProfile($id) : void
+    public function removeUserProfile($id): void
     {
-        $defaultProfile = 'default_profile';
-        $defaultExtension = '.png';
-
-        $query = "UPDATE photos 
-                    SET photo_hash_name = :photoHashName,  
-                        photo_original_name = :photoOriginalName,  
-                        photo_extension = :photoExtension, 
-                        photo_size = :photoSize 
-                    WHERE user_id = :userId";
-
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([
-            ":photoHashName" => $defaultProfile,
-            ":photoOriginalName" => $defaultProfile,
-            ":photoExtension" => $defaultExtension,
-            ":photoSize" => 0,
-            ":userId" => $id
-        ]);
+        Photo::update([
+                'photo_hash_name' => $this->defaultProfile,
+                'photo_original_name' => $this->defaultProfile,
+                'photo_extension' => $this->defaultExtension,
+                'photo_size' => $this->defaultExtension
+            ])
+            ->where('user_id', '=', $id)
+            ->execute();
     }
 
     public function deleteUserInfo($id)
     {
-        $query = "DELETE FROM photos WHERE user_id = :userId;
-                  DELETE FROM users WHERE user_id = :userId;";
-        //$query2 = "DELETE FROM users WHERE user_id = :userId;"
-        
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([
-            ':userId' => $id  
-        ]);
-                  
+        $profile = Photo::where('user_id', '=', $id)->firstModel();
+        Photo::destroy($profile -> __get('photo_id'));
+
+        User::destroy($id);
     }
 
-    public function checkForEmail($email) 
+    public function checkForEmail($email)
     {
-        $query = "SELECT * FROM users WHERE user_email = :userEmail";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([':userEmail' => $email]);
-        
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $result = User::where('user_email', '=', $email)
+            ->getAll();
 
         return $result;
-
     }
 
     public function checkEmailForEdit($id, $email)
     {
-        $query = $query = "SELECT * FROM users WHERE user_email = :userEmail AND user_id NOT = :userID";
-        $statement = $this -> pdo -> prepare($query);
-        $statement -> execute([
-            ':userEmail' => $email,
-            ':userId' => $id  
-        ]);
-        
-        $result = $statement -> fetchAll(PDO::FETCH_ASSOC);
+        $result = User::where('user_email', '=', $email) 
+            ->where('user_id', '!=', $id)
+            ->getAll();
 
         return $result;
-
     }
 
-}
+    public function getAllUsersCount($id, $options = ['name_email_filter' => NULL, 'category_filter' => NULL])
+    {
+        $name_email_no_filter = false;
+        $category_no_filter = false;
 
-?>
+        if(is_null($options['name_email_filter']) || trim($options['name_email_filter'] ) === "")
+        {
+            $name_email_no_filter = true;
+        }
+
+        if(is_null($options['category_filter']) || $options['category_filter'] === 'ALL' )
+        {
+            $category_no_filter = true;
+        }
+
+        $result = User::count('user_id')
+            ->where('user_id', '!=', $id)
+            ->where('user_name', 'LIKE', '%'. $options['name_email_filter'] . "%", $name_email_no_filter)
+            ->where('role_id', '=',  $options['category_filter'] , $category_no_filter)
+            ->getAll();
+
+
+        return $result;
+    }
+
+    public function getAdminUsersCount($id)
+    {
+        $result =  User::count('user_id')
+            ->join('roles', 'users.role_id', '=', 'roles.role_id')
+            ->where('users.user_id', '!=', $id)
+            ->where('roles.role_name', '=', 'ADMIN')
+            ->getAll();
+
+        return $result;
+    }
+
+    public function getNormalUserscount($id)
+    {
+        $result =  User::count('user_id')
+            ->join('roles', 'users.role_id', '=', 'roles.role_id')
+            ->where('users.user_id', '!=', $id)
+            ->where('roles.role_name', '=', 'USER')
+            ->getAll();
+
+        return $result;
+    }
+
+    public function getProfilePicturesCount($id)
+    {
+        $result = Photo::count('photo_id')
+            ->where('user_id', '!=', $id)
+            ->where('photo_type', '=', 'PROFILE')
+            ->where('photo_hash_name', '!=', 'default_profile')
+            ->getAll();
+
+        return $result;
+    }
+}

@@ -10,7 +10,7 @@ class AuthMiddleware
 
         if(isset($_SESSION['user']))
         {
-            switch($_SESSION['user']['user_info']['role_name']){
+            switch($_SESSION['user']['user_info']->__get('role_name')){
 
             case 'USER':
                 header("Location: ./mainMenu");
@@ -36,7 +36,7 @@ class AuthMiddleware
 
         if( $_SESSION['user'] != 'USER' )
         {
-            switch($_SESSION['user']['user_info']['role_name']){
+            switch($_SESSION['user']['user_info']->__get('role_name')){
 
                 case 'ADMIN':
                     $start = 1;
@@ -59,7 +59,7 @@ class AuthMiddleware
 
         if( $_SESSION['user'] != 'ADMIN' )
         {
-            switch($_SESSION['user']['user_info']['role_name']){
+            switch($_SESSION['user']['user_info']->__get('role_name')){
             
             case 'USER':
                 header("Location: ./mainMenu");
@@ -73,7 +73,7 @@ class AuthMiddleware
 
     public function loginGuard()
     {
-        switch($_SESSION['user']['user_info']['role_name']){
+        switch($_SESSION['user']['user_info']->__get('role_name')){
 
             case 'USER':
                 header("Location: ./mainMenu");

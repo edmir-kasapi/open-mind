@@ -32,11 +32,12 @@ $title = "Forgot Password";
                 <input type="password" name="changePassConfirmPassword" class="form-control" required >
             </div>
 
+            <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
             <input type="submit" name="forgotPassreq" value="Change Password" class="btn btn-warning mx-auto align-self-center mt-4">
 
         </form>
 
-        <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?> >
+        
         <a href="./"><button class="btn btn-secondary mx-auto align-self-center mt-1"> Cancel </button></a>
     </section>     
 

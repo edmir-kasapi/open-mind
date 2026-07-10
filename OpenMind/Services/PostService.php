@@ -35,8 +35,8 @@ class PostService
         {
             foreach($posts as $post)
             {
-                $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
-                $postPictures = $this -> postRepository -> getPostPhotos($post['post_id']);
+                $postUser = $this -> userRepository -> getUserInfo($post -> __get('user_id'));
+                $postPictures = $this -> postRepository -> getPostPhotos($post -> __get('post_id'));
 
                 $postData[] = array(
                     "post_info" => $post,
@@ -60,8 +60,8 @@ class PostService
         {
             foreach($posts as $post)
             {
-                $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
-                $postPictures = $this -> postRepository -> getPostPhotos($post['post_id']);
+                $postUser = $this -> userRepository -> getUserInfo($post -> __get('user_id'));
+                $postPictures = $this -> postRepository -> getPostPhotos($post -> __get('post_id'));
 
                 $postData[] = array(
                     "post_info" => $post,
@@ -83,7 +83,7 @@ class PostService
             return false;
         }
 
-        $postUser = $this -> userRepository -> getUserInfo($post['user_id']);
+        $postUser = $this -> userRepository -> getUserInfo($post -> __get('user_id'));
         $postPictures = $this -> postRepository -> getPostPhotos($id);
 
         return array(
@@ -109,7 +109,7 @@ class PostService
     public function removePostImage($idPhoto, $idPost)
     {
         $image = $this -> validatePhotoID($idPhoto, $idPost);
-        $this -> removePostPicture( $image['photo_hash_name'] .'.'. $image['photo_extension'] );
+        $this -> removePostPicture( $image -> __get('photo_hash_name') .'.'. $image -> __get('photo_extension'));
         $this -> postRepository -> removePhoto($idPhoto, $idPost);
 
     }
@@ -118,10 +118,10 @@ class PostService
     {
         foreach($post['post_pictures'] as $image)
         {
-            $this -> removePostImage($image['photo_id'], $post['post_info']['post_id']);
+            $this -> removePostImage($image -> __get('photo_id'), $post['post_info'] -> __get('post_id'));
         }
         
-        $this -> postRepository -> deletePost($post['post_info']['post_id'], $idUser);
+        $this -> postRepository -> deletePost($post['post_info']-> __get('post_id') , $idUser);
     }
 
     public function deleteAllUserPosts($idUser)

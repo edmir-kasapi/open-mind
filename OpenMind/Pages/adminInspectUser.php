@@ -22,7 +22,7 @@ $title = "Profile";
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h1 class="mb-0 fs-3">Inspecting User #<?php echo $userInspected['user_info']["user_id"] ?></h1>
+                        <h1 class="mb-0 fs-3">Inspecting User #<?php echo $userInspected['user_info'] -> __get('user_id'); ?></h1>
                     </div>
                 </div>
             </div>
@@ -36,18 +36,18 @@ $title = "Profile";
                         <div class="card">
                             <div class="card-body text-center">
                                 <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 96px; height: 96px; font-size: 2rem" aria-hidden="true">
-                                    <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInspected["user_profile"]["photo_hash_name"] . '.' . $userInspected["user_profile"]["photo_extension"]  ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" alt="..." class=" rounded-circle border border-5" width="155" height="155">
+                                    <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInspected["user_profile"] -> __get('photo_hash_name') . '.' . $userInspected["user_profile"] -> __get('photo_extension')  ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" alt="..." class=" rounded-circle border border-5" width="155" height="155">
                                 </div>
-                                <h3 class="h5 mb-0"><?php echo $userInspected['user_info']["user_name"] ?></h3>
-                                <p class="text-secondary mb-3"><?php echo $userInspected['user_info']["user_email"] ?></p>
+                                <h3 class="h5 mb-0"><?php echo $userInspected['user_info']-> __get('user_name'); ?></h3>
+                                <p class="text-secondary mb-3"><?php echo $userInspected['user_info']-> __get('user_email'); ?></p>
                                 <ul class="list-group list-group-flush text-start small">
                                     <li class="list-group-item d-flex justify-content-between px-0">
                                         <span class="text-secondary">Role</span>
-                                        <span class="fw-semibold"><?php echo $userInspected['user_info']["role_name"] ?></span>
+                                        <span class="fw-semibold"><?php echo $userInspected['user_info'] -> __get('role_name'); ?></span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between px-0">
                                         <span class="text-secondary">Joined</span>
-                                        <span class="fw-semibold"><?php echo $userInspected['user_info']["user_registration_date"] ?></span>
+                                        <span class="fw-semibold"><?php echo $userInspected['user_info'] -> __get('user_registration_date'); ?></span>
                                     </li>
 
                                     <!-- 
@@ -58,23 +58,25 @@ $title = "Profile";
                                     -->
                                 </ul>
 
-                                <a href="./viewUserPosts?viewingUser=<?php echo $userInspected['user_info']["user_id"] ?>">
+                                <a href="./viewUserPosts?viewingUser=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>">
                                     <button class="bi bi-body-text btn btn-primary w-100 mt-3"> View Posts </button>
                                 </a>
 
-                                <form action="./deleteUser" method="post">
-                                    <input type="hidden" name="userId" value=<?php echo $userInspected['user_info']["user_id"] ?>>
-                                    <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
-                                    <input type="submit" class=" btn btn-danger w-100 mt-3" value="Delete User" onclick="return confirm('Are you sure you want to edelete this user? This action cannot be undone.')">
-                                </form>
+                                <?php if ($userInspected['user_info']-> __get('role_name') === 'USER'): ?>
+                                    <form action="./deleteUser" method="post">
+                                        <input type="hidden" name="userId" value=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>>
+                                        <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
+                                        <input type="submit" class=" btn btn-danger w-100 mt-3" value="Delete User" onclick="return confirm('Are you sure you want to edelete this user? This action cannot be undone.')">
+                                    </form>
+                                <?php endif; ?>    
 
 
                             </div>
 
                         </div>
 
-                        <a href="./adminMenu">
-                                <button class="btn btn-dark mt-3 w-100 text-center"> Main Menu </button>
+                        <a href="./usersDirectory">
+                                <button class="btn btn-dark mt-3 w-100 text-center"> Back to Users Directory </button>
                         </a>
 
                         <!-- About details -->
@@ -149,18 +151,18 @@ $title = "Profile";
                                         <form action="./adminEditNameEmail" method="post" class="row g-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="profile-first"> Username </label>
-                                                <input type="text" name="editName" class="form-control" placeholder="Enter username here..." required value="<?php echo $userInspected['user_info']["user_name"] ?>">
+                                                <input type="text" name="editName" class="form-control" placeholder="Enter username here..." required value="<?php echo $userInspected['user_info'] -> __get('user_name'); ?>">
                                             </div>
 
                                             <div class="col-md-6">
                                                 <label class="form-label" for="profile-last">Email </label>
-                                                <input type="email" name="editEmail" class="form-control" placeholder="Enter email here..." required value=<?php echo $userInspected['user_info']["user_email"] ?> >
+                                                <input type="email" name="editEmail" class="form-control" placeholder="Enter email here..." required value=<?php echo $userInspected['user_info'] -> __get('user_email'); ?> >
                                             </div>
 
-                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info']["user_id"] ?>>
+                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info'] -> __get('user_id');?>>
                                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
 
-                                            <?php if ($userInspected['user_info']["role_name"] == 'USER'): ?>
+                                            <?php if ($userInspected['user_info']-> __get('role_name') === 'USER'): ?>
                                                 <div class="col-12 mt-3">
                                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                                     <button type="reset" class="btn btn-outline-secondary ms-1">
@@ -178,7 +180,7 @@ $title = "Profile";
                                         <form action="./adminEditProfilePic" method="post" enctype="multipart/form-data" row g-3>
 
                                             <div class="col-md-6">
-                                                <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInspected["user_profile"]["photo_hash_name"] . '.' . $userInspected["user_profile"]["photo_extension"]  ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" alt="..." class="img-thumbnail" width="250" height="250">
+                                                <img src="Pictures/Uploads/Profile_Pictures/<?php echo $userInspected["user_profile"] -> __get('photo_hash_name') . '.' . $userInspected["user_profile"] -> __get('photo_extension')  ?>" onerror="this.onerror=null; this.src='Pictures/Assets/default_profile.png'" alt="..." class="img-thumbnail" width="250" height="250">
                                             </div>
 
                                             <div class="col-md-6">
@@ -187,10 +189,10 @@ $title = "Profile";
 
                                                     <input class="form-control" type="file" name="profilePicture" required>
 
-                                                    <input type="hidden" name="editId" value=<?php echo $userInspected['user_info']["user_id"] ?>>
+                                                    <input type="hidden" name="editId" value=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>>
                                                     <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
 
-                                                    <?php if ($userInspected['user_info']["role_name"] == 'USER'): ?>
+                                                    <?php if ($userInspected['user_info'] -> __get('role_name') == 'USER'): ?>
                                                         <input type="submit" name="editProfileReq" value="Edit" class="btn btn-info text-white mt-3">
                                                     <?php endif; ?>
                                                 </div>
@@ -199,10 +201,10 @@ $title = "Profile";
 
                                         <form action="./adminClearProfilePic" method="post">
 
-                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info']["user_id"] ?>>
+                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>>
                                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
 
-                                            <?php if ($userInspected['user_info']["role_name"] == 'USER'): ?>
+                                            <?php if ($userInspected['user_info'] -> __get('role_name') == 'USER'): ?>
                                                 <input type="submit" name="removeProfileReq" value="Clear Picture" class="btn btn-danger text-white mt-2">
                                             <?php endif; ?>
 
@@ -230,10 +232,10 @@ $title = "Profile";
                                             </div>
 
 
-                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info']["user_id"] ?>>
+                                            <input type="hidden" name="editId" value=<?php echo $userInspected['user_info'] -> __get('user_id'); ?>>
                                             <input type="hidden" name="_token" value=<?php echo $_SESSION['token'] ?>>
 
-                                            <?php if ($userInspected['user_info']["role_name"] == 'USER'): ?>
+                                            <?php if ($userInspected['user_info'] -> __get('role_name') == 'USER'): ?>
                                                 <div class="col-12">
                                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                                     <button type="reset" class="btn btn-outline-secondary ms-1">

@@ -43,7 +43,7 @@ class AuthController extends Controller
         $this -> render('forgotPassword', [] );
     }
 
-    public function logIn()
+    public function logIn() //works
     {
         try {
 
@@ -53,6 +53,7 @@ class AuthController extends Controller
             $password = filter_input(INPUT_POST, 'loginPassword', FILTER_SANITIZE_SPECIAL_CHARS);
 
             $_SESSION['user'] = $this -> authService -> authenticateUser($email, $password);
+            var_dump($_SESSION['user']);
             unset($_SESSION['autofill']['login_email_fill']);
             $this -> authMiddleware -> resetTokenTime();
             $this -> authMiddleware -> loginguard(); 
@@ -68,7 +69,7 @@ class AuthController extends Controller
         }
     }
 
-    public function registerUser()
+    public function registerUser() 
     {
         try {
 
@@ -104,7 +105,7 @@ class AuthController extends Controller
 
     }
 
-    public function processForgotPassword()
+    public function processForgotPassword() 
     {
 
         try {
@@ -126,6 +127,10 @@ class AuthController extends Controller
             $_SESSION['messages']['error'] = $e -> getMessage();
             $_SESSION['autofill']['forgot_email_fill'] = $email;
 
+        }catch (InvalidTokenException $e) {
+        
+            header("Location: ./404");
+
         } finally {
 
             header("Location: ./forgotPassword");
@@ -141,7 +146,7 @@ class AuthController extends Controller
             $this -> authMiddleware -> tokenGuard($_POST['_token'], $_SESSION['token']);
 
             $user = $_SESSION['user'];
-            $id = $user['user_info']["user_id"]; //taken from the session, no need to filter
+            $id = $user['user_info'] -> __get('user_id'); //taken from the session, no need to filter
 
             $name = filter_input(INPUT_POST, 'editName', FILTER_SANITIZE_SPECIAL_CHARS);
             $email = filter_input(INPUT_POST, 'editEmail', FILTER_SANITIZE_EMAIL);
@@ -176,7 +181,7 @@ class AuthController extends Controller
             $this -> authMiddleware -> tokenGuard($_POST['_token'], $_SESSION['token']);
 
             $user = $_SESSION['user'];
-            $id = $user['user_info']["user_id"]; //taken from the session, no need to filter
+            $id = $user['user_info'] -> __get('user_id'); //taken from the session, no need to filter
 
             $passwordNew = filter_input(INPUT_POST, 'editPassword', FILTER_SANITIZE_SPECIAL_CHARS);
             $passwordConfirm = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_SPECIAL_CHARS);

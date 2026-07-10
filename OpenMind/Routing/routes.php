@@ -42,6 +42,7 @@ $router -> get('/inspectUser', AdminController::class, 'showInspectUser');
 $router -> get('/viewUserPosts', AdminController::class, 'showViewUserPosts');
 $router -> get('/inspectUserPost', AdminController::class, 'showInspectuserPost');
 $router -> get('/allPosts', AdminController::class, 'showAllPosts');
+$router -> get('/usersDirectory', AdminController::class, 'showUsersDirectory');
 //POST
 $router -> post('/adminEditNameEmail', AdminController::class, 'adminEditNameEmail');
 $router -> post('/adminEditProfilePic', AdminController::class, 'adminEditProfilePic');
